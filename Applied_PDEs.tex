@@ -1,0 +1,424 @@
+% !TEX TS-program = pdflatex
+% !TEX encoding = UTF-8 Unicode
+
+% This is a simple template for a LaTeX document using the "article" class.
+% See "book", "report", "letter" for other types of document.
+
+\documentclass[12pt]{article} % use larger type; default would be 10pt
+
+\usepackage[utf8]{inputenc} % set input encoding (not needed with XeLaTeX)
+
+%%% Examples of Article customizations
+% These packages are optional, depending whether you want the features they provide.
+% See the LaTeX Companion or other references for full information.
+
+%%% PAGE DIMENSIONS
+\usepackage{geometry} % to change the page dimensions
+\geometry{a4paper} % or letterpaper (US) or a5paper or....
+% \geometry{margins=2in} % for example, change the margins to 2 inches all round
+% \geometry{landscape} % set up the page for landscape
+%   read geometry.pdf for detailed page layout information
+
+\usepackage{graphicx} % support the \includegraphics command and options
+
+% \usepackage[parfill]{parskip} % Activate to begin paragraphs with an empty line rather than an indent
+
+%%% PACKAGES
+\usepackage{booktabs} % for much better looking tables
+\usepackage{array} % for better arrays (eg matrices) in maths
+\usepackage{paralist} % very flexible & customisable lists (eg. enumerate/itemize, etc.)
+\usepackage{verbatim} % adds environment for commenting out blocks of text & for better verbatim
+\usepackage{subfig} % make it possible to include more than one captioned figure/table in a single float
+% These packages are all incorporated in the memoir class to one degree or another...
+
+%%% HEADERS & FOOTERS
+\usepackage{fancyhdr} % This should be set AFTER setting up the page geometry
+\pagestyle{fancy} % options: empty , plain , fancy
+\renewcommand{\headrulewidth}{0pt} % customise the layout...
+\lhead{}\chead{}\rhead{}
+\lfoot{}\cfoot{\thepage}\rfoot{}
+
+%%% SECTION TITLE APPEARANCE
+\usepackage{sectsty}
+\allsectionsfont{\sffamily\mdseries\upshape} % (See the fntguide.pdf for font help)
+% (This matches ConTeXt defaults)
+
+%%% ToC (table of contents) APPEARANCE
+\usepackage[nottoc,notlof,notlot]{tocbibind} % Put the bibliography in the ToC
+\usepackage[titles,subfigure]{tocloft} % Alter the style of the Table of Contents
+\renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
+\renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
+
+%%% END Article customizations
+%%% package added by Wenge
+\usepackage{derivative}
+\usepackage{mathtools}
+
+%%% The "real" document content comes below...
+
+\title{Notes for Applied PDEs}
+\author{Wenge Huang}
+%\date{} % Activate to display a given date or no date (if empty),
+         % otherwise the current date is printed 
+
+\begin{document}
+\maketitle
+
+\section{Lecture1} 
+
+
+\hspace{5mm}
+Let's consider the 2nd order PDEs. The most general form of a 2nd order PDE with two variables is:\\
+\begin{equation}  
+Au_{xx}+Bu_{xy}+Cu_{yy}+Du_{x}+Eu_{y}+Fu=G
+ % there should be no gap between any of the two rows  
+\end{equation} \\
+where  $A, B, ... G$ are constants or given functions of $x$ and $y$.\par
+\subsection{Types of PDEs}
+\hspace{5mm}All linear PDEs in the form of Eq(1) can be classified into three types:  \emph {\textbf{hyperbolic, parabolic}} and \emph{\textbf{elliptic}}.\\
+
+The hyperbolic type: e.g. the wave equation 
+\begin{equation}
+\Delta (x, y) = B^{2}(x, y) - 4A(x, y)C(x, y) >0
+\end{equation}
+\par
+The parabolic type: e.g. the heat equation
+\begin{equation}
+\Delta (x, y) = B^{2}(x, y) - 4A(x, y)C(x, y) =0
+\end{equation}
+\par
+The elliptic type: e.g. the Laplace equation
+\begin{equation}
+\Delta (x, y) = B^{2}(x, y) - 4A(x, y)C(x, y) <0
+\end{equation}\par
+
+
+\subsection{Superposition principle}
+\hspace{5mm}
+If $u_{1}$, $u_{2}$, ... $u_{n}$, are the solutions to the linear homogeneous PDE $Lu = 0$, and $u_{1}$, $u_{2}$, ... $u_{n}$ $\in$ $R$. Here $L$ is a linear differential operator.  Then the linear combination of $\sum_{1}^{n}c_{i}u_{i}$ is also the solution of the PDE.\par
+Let $S_{h}$ be the set of all solutions to the homogeneous problem $$Lu = 0$$ \par
+Then we consider the inhomogeneous problem$$Lu = f$$\par
+The set of all solutions to this inhomogeneous problem is given by
+$$
+S_{i}=\{u_{i}+u_{h}| u_{h} \in S_{h}\}
+$$Here $u_{i}$ is a particular solution to the inhomogeneous problem and $S_{i}$ is the translation of $S_{h}$ by $u_{i}$.\par
+\section{Lecture2}
+
+
+\subsection{ODE}
+\hspace{5mm}Let's consider the 2nd ODE first. 
+\begin{equation}
+ax''(t) + bx'(t) +cx(t) =0
+\end{equation}where $a$, $b$ and $c$ $\in$ $R$ and $a \neq 0$.\par
+We consider the characteristic equation first:
+\begin{equation}
+a\lambda^{2} + b\lambda +c =0
+\end{equation}with two solution $\lambda_{1}$ and $\lambda_{2}$.\par
+Case I, when $\lambda_{1} \neq \lambda_{2}$, we have the independent solutions:
+$$\left \{ \begin{array}{rcl}
+x_{1}(t) = e^{\lambda_{1}t} \\
+x_{2}(t) = e^{\lambda_{2}t}
+\end{array}\right.
+$$.\par
+Case II, when have the same roots $\lambda_{1} = \lambda_{2}$, we have the solution:
+$$\left \{ \begin{array}{lcc}
+x_{1}(t) = e^{\lambda_{1}t} \\
+x_{2}(t) =\emph{\textbf{t}}e^{\lambda_{2}t}
+\end{array}\right.
+$$.\par
+Case III, we have complex conjugate pairs of roots $\lambda_{1} = \alpha +\beta i$ and $\lambda_{2} = \alpha -\beta i$. The two independent  solutions are:
+$$\left \{ \begin{array}{lcc}
+x_{1}(t) = e^{\alpha t}cos(\beta t) \\
+x_{2}(t) =e^{\alpha t}sin(\beta t)
+\end{array}\right.
+$$.\par
+With initial conditions given, we'll search solution with a linear combination of the independent solutions
+\begin{equation}
+x(t) = C_{1}x_{1}(t) + C_{2}x_{2}(t)
+\end{equation} where $C_{1}$ and $C_{2}$ $\in$ $R$. \par
+This is called the general solution of the homogeneous problem Eq(5).\par
+Then for the inhomogeneous version, 
+\begin{equation}
+ax''(t) + bx'(t) +cx(t) =f(t)
+\end{equation}
+we need to use the \textbf {variable of parameter formula} to find a particular solution. \par
+
+
+
+\section{Heat equation}
+\hspace{5mm}Let's consider the 1D heat equation on the interval $(0, L)$ and subject to some initial conditions(IBVP).\par
+%% Partial derivative symbol in LaTeX \frac{\partial f}{\partial x_i}
+\begin{equation}
+\left \{ \begin{array}{llc}
+\pdv{u}{t} =\frac{\partial^{2}u}{\partial x^{2}} & x \in (0,L),  t>0 \\
+u(0,t) = 0, u(L, t) = 0& t>0 \\
+u(x, 0) = f(x) & 0 \leq x \leq L
+\end{array}\right.
+\end{equation}
+
+
+\subsection{Separation of variable}
+\hspace{5mm}We are looking for non-trivial solutions. We assume:
+$$
+u(x,t) = V(x)T(t) \hspace{10mm} x \in (0,L),  t>0
+$$\par
+Plugging it into the Eq(9), we can obtain
+$$
+\frac{T'}{T} = \frac{V''}{V} = \beta \hspace{10mm} \forall x \in (0,L),  t>0
+$$ Thus, we get
+$$
+\left\{\begin{array}{lcc}
+T'(t) = \beta T(t)\\
+V''(t) = \beta V(t)
+\end{array}\right.
+$$ we successfully transfer the PDE to ODEs. \par
+Considering the boundary conditions $u(0,t) = 0, u(L, t) = 0, \hspace{5mm} t>0 $ we have $V(0) = 0$ and $V(L) = 0$.\par
+$$
+\left\{\begin{array}{lcc}
+V''(t) = \beta V(t) & ,x \in (0,L)\\
+V(0) = 0 \\
+V(L) = 0
+\end{array}\right.
+$$ In this case, the characteristic equation is:
+$$
+\lambda^{2} - \beta = 0
+$$we have three cases for $\beta$. And we can check that only when $\beta <0$, the solution is non-trivial. \par 
+When $\beta >0$ we have two distinguished real roots
+$$\left \{ \begin{array}{lcc}
+V_{1}(x) = e^{-\sqrt{\beta}x} \\
+V_{2}(x) = e^{\sqrt{\beta}x}
+\end{array}\right.
+$$\par
+Then $V(x) = C_{1}V_{1}(x)+C_{2}V_{2}(x)$ with the boundary conditions $V(0) = 0$ and $V(L) = 0$. As a result $C_{1} = C_{2} =0$.\par
+When $\beta =0$, we have $\lambda_{1} = \lambda_{2} = 0$. Thus we can find that $V_{1}(x)=1$ and $V_{1}(x)=x$. Considering the boundary conditions, the coefficients are also should be 0, \emph{i.e.} $C_{1} = C_{2} =0$. 
+When $\beta <0$, the solutions of the characteristic function is 
+$$
+\lambda = \pm \sqrt{-\beta}i
+$$As a result, we find that $V_{1}(x) = cos (\sqrt{-\beta }x)$ and $V_{2}(x) = sin (\sqrt{-\beta }x)$.
+With the boundary condition given $V(0) = 0$ and $V(L) = 0$, we have that:
+$$
+C_{1} + 0 = 0
+$$
+$$
+C_{1} cos (\sqrt{-\beta }L) + C_{2} sin (\sqrt{-\beta }L) = 0
+$$
+For non-trivial solutions, we need to have $sin (\sqrt{-\beta }L) = 0$ and 
+$$
+\beta_{n} = - \left(
+\frac{n \pi}{L}
+\right)^{2}, \hspace{5mm} n \in N
+$$Thus we find the eigenvalues and the eigenfunctions:
+\begin{equation}
+ \left\{
+ \begin{array}{lcc}
+ \beta_{n} = - \left(
+\frac{n \pi}{L}
+\right)^{2} &, n \in N \\
+V_{n}(x) = sin(\frac{n\pi}{L}x)
+ \end{array} \right.
+\end{equation}
+Now for each $\beta$ we have the solution for $T(t)$:
+$$
+T'(t) = \beta_{n}T(t), \hspace{5mm}  n \in N
+$$
+$$
+T(t) = e^{ - \left(
+\frac{n \pi}{L}
+\right)^{2}t} \hspace{5mm} n \in N
+$$
+We find the solution:
+\begin{equation}
+u_{n}(x, t) = V_{n}(x)T_{n}(t) = e^{ - \left(
+\frac{n \pi}{L}
+\right)^{2}t}sin(\frac{n\pi}{L}x) \hspace{5mm} n\in N
+\end{equation}\par
+From the above calculation, we know that each $u_{n}$ satisfies the following homogeneous BVP:
+\begin{equation}
+\left \{ \begin{array}{llc}
+\pdv{u}{t} =\frac{\partial^{2}u}{\partial x^{2}} & & x \in (0,L),  t>0 \\
+u(0,t) = 0, u(L, t) = 0 && t>0 
+\end{array}\right.
+\end{equation}\par
+We look for the solution of the form:
+\begin{equation}
+u(x, t) = \sum_{n=1}^{\infty}C_{n}u_{n}(x, t)
+\end{equation}\par
+We need to utilize the initial conditions to find the coefficient. The initial condition is:
+$$
+u(x, 0) = f(x) \hspace{5mm} x \in [0, L]
+$$
+With $t = 0$, we have $T(0) = 1$ and also:
+\begin{equation}
+\sum_{n=1}^{\infty}C_{n}sin(\frac{n\pi}{L}x) = f(x)
+\end{equation}\par
+This is exactly the problem of finding the \textbf{Fourier sine expansion} of the given function $f$.\par
+To find the coefficient $C_{n}$, we use the fact that $V_{n}$ are orthogonal to each other in the sense that:
+\begin{equation}
+\int_{0}^{L}V_{n}(x)V_{m}(x)dx = 
+\left\{
+\begin{array}{lcc}
+0 & if & m \neq n \\
+\frac{L}{2} & if& m = n
+\end{array}
+\right.
+\end{equation}\par
+Now multiply both side of Eq(14) by $V_{m}$ and integrate from 0 to $L$.
+$$
+\int_{0}^{L}\sum_{n=1}^{\infty}C_{n}V_{n}(x)V_{m}(x)dx = \int_{0}^{L}f(x)V_{m}(x)dx
+$$
+Assume we can switch $\int_{0}^{L}$ with $\sum_{n=1}^{\infty}$, we get
+$$
+C_{n} = \frac{2}{L}\int_{0}^{L}f(x)sin(\frac{n\pi}{L}x)dx \hspace{5mm} n\in N
+$$\par
+With known the coefficient, we finally obtain the complete solution of the IBVP Eq(9):
+\begin{equation}
+u(x, t) = \sum_{n=1}^{\infty}\frac{2}{L}\int_{0}^{L}f(x')sin(\frac{n\pi}{L}x')dx' e^{ - \left(
+\frac{n \pi}{L}
+\right)^{2}t}sin(\frac{n\pi}{L}x) \hspace{5mm} n \in N, t>0, x \in [0, L]
+\end{equation}
+
+
+\subsection{Source term}
+\hspace{5mm}Now we are trying to solve the heat equation with the source term:
+\begin{equation}
+\left \{ \begin{array}{llc}
+\pdv{u}{t} =\frac{\partial^{2}u}{\partial x^{2}} + g(x, t)& x \in (0,L),  t>0 \\
+u(0,t) = 0, u(L, t) = 0& t>0 \\
+u(x, 0) = f(x) & 0 \leq x \leq L
+\end{array}\right.
+\end{equation}\par
+First we recall the homogeneous BVP
+$$
+\left \{ \begin{array}{llc}
+\pdv{u}{t} =\frac{\partial^{2}u}{\partial x^{2}} & & x \in (0,L),  t>0 \\
+u(0,t) = 0, u(L, t) = 0 && t>0 
+\end{array}\right.
+$$\par 
+We know the eigenvalues and eigenfunctions:
+$$
+\left\{
+ \begin{array}{lcc}
+ \beta_{n} = - \left(
+\frac{n \pi}{L}
+\right)^{2} &, n \in N \\
+V_{n}(x) = sin(\frac{n\pi}{L}x)
+ \end{array} \right.
+$$\par
+We are looking for the solution of the form:
+\begin{equation}
+u(x, t) = \sum_{n=1}^{\infty}\tilde{T}_{n}(t)V_{n}(x)
+\end{equation}\par
+Plugging Eq(31) into the source term Eq(17), we get
+$$
+\sum_{n=1}^{\infty}\frac{d}{dt}(\tilde{T}_{n}(t))V_{n}(x) = \sum_{n=1}^{\infty}\tilde{T}_{n}(t) \frac{d^{2}}{dx^{2}}(V_{n}(x)) + g(x, t)
+$$
+with knowing that 
+$$
+V''(x) = \beta V(x)
+$$\par
+Now using the orthogonal property, we multiply both sides by $V_{m}$ and integrate from 0 to $L$:
+$$
+\sum_{n=1}^{\infty}\frac{d}{dt}(\tilde{T}_{n}(t))\int_{0}^{L}V_{n}(x)V_{m}(x)dx = \sum_{n=1}^{\infty}\tilde{T}_{n}(t)\beta_{n} \int_{0}^{L}V_{n}(x)V_{m}(x)dx  + \int_{0}^{L}g(x, t)V_{m}(x)dx 
+$$
+Using Eq(15)
+$$
+\int_{0}^{L}V_{n}(x)V_{m}(x)dx = 
+\left\{
+\begin{array}{lcc}
+0 & if & m \neq n \\
+\frac{L}{2} & if& m = n
+\end{array}
+\right.
+$$\par
+We have 
+$$
+\frac{d}{dt}(\tilde{T}_{m}(t)) = \beta_{m}\tilde{T}_{m}(t) + \frac{2}{L}\int_{0}^{L}g(x, t)V_{m}(x)dx
+$$
+we get an ODE
+$$
+\frac{d}{dt}(\tilde{T}_{n}(t)) = \beta_{n}\tilde{T}_{n}(t) +h_{n}(t)
+$$\par
+Then we consider the initial condition $u(x, 0) = f(x)$:
+$$
+u(x, 0) = \sum_{n = 1}^{\infty}\tilde{T}_{n}(0) V_{n}(x) = f(x)
+$$\par
+Like before, we multiply both sides by $V_{m}$ and integrate from 0 to $L$:
+$$
+\sum_{n=1}^{\infty}\tilde{T}_{n}(0) \int_{0}^{L}V_{n}(x)V_{m}(x)dx = \int_{0}^{L}f(x)V_{m}(x)dx
+$$
+$$
+\tilde{T}_{n}(0) = \frac{2}{L}\int_{0}^{L}f(x)V_{n}(x)dx = \omega_{n}
+$$
+Now we have the IVP for $\tilde{T}_{n}(t)$:
+\begin{equation}
+\left\{
+\begin{array}{lcc}
+\frac{d}{dt}\tilde{T}_{n}(t) = \beta_{n}\tilde{T}_{n}(t) + h_{n}(t) \\
+\\
+\tilde{T}_{n}(0) =  \omega_{n}
+\end{array}\right.
+\end{equation}where
+$$
+h_{n}(t) = \frac{2}{L}\int_{0}^{L}g(x, t)V_{n}(x)dx
+$$
+$$
+\omega_{n} = \frac{2}{L}\int_{0}^{L}f(x)V_{n}(x)dx
+$$\par
+Now we need to solve the IVP problem with the variation of parameter formula:
+$$
+\tilde{T}_{n}(t) = \omega_{n}e^{\beta_{n}t} + \int_{0}^{t}e^{\beta_{n}(t-s)}h_{n}(s)ds
+$$
+Finally we find the complete solution of the heat equation with source term:
+\begin{equation}
+\begin{multlined}
+u(x, t) = \sum_{n = 1}^{\infty} \frac{2}{L}\int_{0}^{L}f(x')sin(\frac{n\pi}{L}x')dx'e^{ - \left(
+\frac{n \pi}{L}
+\right)^{2}t}sin(\frac{n\pi}{L}x)\\
++
+\sum_{n=1}^{\infty}\left[ 
+\int_{0}^{t}e^
+{- \left(
+\frac{n \pi}{L}
+\right)^{2}(t-s)
+}\frac{2}{L}\int_{0}^{L}g(x, s)sin(\frac{n\pi}{L}x)ds
+\right]
+\end{multlined}
+\end{equation}
+
+
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
