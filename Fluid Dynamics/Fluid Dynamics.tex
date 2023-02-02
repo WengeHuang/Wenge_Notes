@@ -1,0 +1,268 @@
+% !TEX TS-program = pdflatex
+% !TEX encoding = UTF-8 Unicode
+
+% This is a simple template for a LaTeX document using the "article" class.
+% See "book", "report", "letter" for other types of document.
+
+\documentclass[11pt]{article} % use larger type; default would be 10pt
+
+\usepackage[utf8]{inputenc} % set input encoding (not needed with XeLaTeX)
+
+%%% Examples of Article customizations
+% These packages are optional, depending whether you want the features they provide.
+% See the LaTeX Companion or other references for full information.
+
+%%% PAGE DIMENSIONS
+\usepackage{geometry} % to change the page dimensions
+\geometry{a4paper} % or letterpaper (US) or a5paper or....
+% \geometry{margins=2in} % for example, change the margins to 2 inches all round
+% \geometry{landscape} % set up the page for landscape
+%   read geometry.pdf for detailed page layout information
+
+\usepackage{graphicx} % support the \includegraphics command and options
+
+% \usepackage[parfill]{parskip} % Activate to begin paragraphs with an empty line rather than an indent
+
+%%% PACKAGES
+\usepackage{booktabs} % for much better looking tables
+\usepackage{array} % for better arrays (eg matrices) in maths
+\usepackage{paralist} % very flexible & customisable lists (eg. enumerate/itemize, etc.)
+\usepackage{verbatim} % adds environment for commenting out blocks of text & for better verbatim
+\usepackage{subfig} % make it possible to include more than one captioned figure/table in a single float
+% These packages are all incorporated in the memoir class to one degree or another...
+
+%%% HEADERS & FOOTERS
+\usepackage{fancyhdr} % This should be set AFTER setting up the page geometry
+\pagestyle{fancy} % options: empty , plain , fancy
+\renewcommand{\headrulewidth}{0pt} % customise the layout...
+\lhead{}\chead{}\rhead{}
+\lfoot{}\cfoot{\thepage}\rfoot{}
+
+%%% SECTION TITLE APPEARANCE
+\usepackage{sectsty}
+\allsectionsfont{\sffamily\mdseries\upshape} % (See the fntguide.pdf for font help)
+% (This matches ConTeXt defaults)
+
+%%% ToC (table of contents) APPEARANCE
+\usepackage[nottoc,notlof,notlot]{tocbibind} % Put the bibliography in the ToC
+\usepackage[titles,subfigure]{tocloft} % Alter the style of the Table of Contents
+\renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
+\renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
+
+%%% END Article customizations
+%%%package added by Wenge
+\usepackage{esint}
+
+%%% The "real" document content comes below...
+
+\title{Notes for fluid dynamics}
+\author{Wenge Huang}
+%\date{} % Activate to display a given date or no date (if empty),
+         % otherwise the current date is printed 
+
+\begin{document}
+\maketitle
+
+\section{Basic equation}
+\subsection{Substantial derivative}
+\hspace{5mm}
+$\frac{D}{Dt}$ is called the substantial derivative. $\frac{D\rho}{Dt}$ is the instantaneous time rate of change of density of the fluid element as it moves through a point. Here our eyes are locked on the fluid element as it is moving, and we are watching the density change of the element as it moves through the point. \par
+This is different from $\frac{\partial \rho}{\partial t}$, which is physically the time rate of change of density at the fixed point. \par
+$\frac{D\rho}{Dt}$ and $\frac{\partial \rho}{\partial t}$ are physically and numerically different quantities. \par
+Here we show the definition of $\frac{D}{Dt}$. If we have
+$$
+\rho_{1} = \rho_{1}(x_{1}, y_{1}, z_{1}, t_{1})
+$$
+$$
+\rho_{2} = \rho_{2}(x_{2}, y_{2}, z_{2}, t_{2})
+$$
+Then we calculate that
+\begin{equation}
+\frac{D\rho}{Dt} = \lim_{t_{1} \to t_{2}}\frac{\rho_{2}-\rho_{1}}{t_{1}-t_{2}}
+\end{equation}
+\begin{equation}
+\frac{D\rho}{Dt} = \frac{\partial \rho}{\partial t}+u\frac{\partial \rho}{\partial x}+v\frac{\partial \rho}{\partial y}+w\frac{\partial \rho}{\partial z}
+\end{equation}
+\begin{equation}
+\frac{D}{Dt} = \frac{\partial }{\partial t}+\vec{v}\cdot \nabla
+\end{equation}
+The first part is the local derivative and the second part is the convective derivative.\par
+The substantial derivative is essentially the total derivative from calculus. For example:
+$$
+d\rho = \frac{\partial \rho}{\partial t}dt+\frac{\partial \rho}{\partial x}dx+\frac{\partial \rho}{\partial y}dy+\frac{\partial \rho}{\partial z}dz
+$$
+$$
+\frac{D\rho}{Dt} = \frac{d \rho}{d t} = \frac{\partial \rho}{\partial t}+\frac{\partial \rho}{\partial x}\frac{dx}{dt}+\frac{\partial \rho}{\partial y}\frac{dy}{dt}+\frac{\partial \rho}{\partial z}\frac{dz}{dt}
+$$
+
+
+
+\subsection{Conservation of mass}
+\hspace{5mm} We consider the finite control volume (here we consider that the CV is fixed in space, which means the shape of the volume is unchanged).\par
+Mass is conserved: \textbf{Net mass flow out of the control volume through surface $S$ is equal to the time rate of decrease of mass inside the control volume $V$}.\par
+The mass flux across a surface element $d\vec{S}$ is:
+$$
+\rho\vec{v}\cdot d\vec{S}
+$$
+The net mass flow out of control volume is:
+$$
+\iint_{S}\rho\vec{v}\cdot d\vec{S}
+$$
+The total mass inside the control volume is:
+$$
+\iiint_{V} \rho dV
+$$
+Since we consider the fixed control volume, the time rate of increase of mass inside the CV $V$ is then:
+$$
+\frac{\partial}{\partial t}\iiint_{V} \rho dV
+$$Note that the time rate of decrease is negative, while the net mass flux out is positive. When considering conservation, we should make the sign correct.\par
+Thus we have the conservation of mass:
+\begin{equation}
+\frac{\partial}{\partial t}\iiint_{V} \rho dV + \iint_{S}\rho\vec{v}\cdot d\vec{S} = 0
+\end{equation}\par
+Now we consider the control volume moving with the fluid. The control volume is always made up of the same fluid particles as it moves with the flow. The mass is fixed, but the volume $V$ and the control surface $S$ is always changing.\par
+The total mass of the finite control volume is:
+$$
+M = \iiint_{\Omega} \rho d\Omega
+$$
+The volume integral is taken over the whole moving control volume $\Omega$. But the control volume is changing as the control volume moves downstream.\par
+Since the mass $M$ is constant, it doesn't change with time, mathematically:
+$$
+\frac{dM}{dt} = 0
+$$\par
+Here we use the form of the substantial derivative:
+\begin{equation}
+\frac{D}{Dt} \iiint_{\Omega} \rho d\Omega =0
+\end{equation}
+Again, we get the integral form of the continuity equation (nonconservation form). We have obtained the \textbf{integral} form of the continuity equation in two different ways. Now we are trying to get the \textbf{differential} form also in two different ways. Note that it is not a simple transfer from the integral to differential mathematically. \par
+This time, we don't consider the finite control volume $V$ but an infinitesimally small element $dxdydz$ (fixed in space).\par
+The Net mass flux for the infinitesimally small element in $x$ is:
+$$
+\left[ \rho u + \frac{\partial \rho u}{\partial x}dx\right] \cdot dydz 
+-(\rho u) dydz = \frac{\partial \rho u}{\partial x}dxdydz
+$$
+$$
+\left[ \rho v + \frac{\partial \rho v}{\partial y}dx\right] \cdot dxdz 
+-(\rho v) dxdz = \frac{\partial \rho v}{\partial y}dxdydz
+$$
+$$
+\left[ \rho w + \frac{\partial \rho w}{\partial z}dz\right] \cdot dydx 
+-(\rho w) dydx = \frac{\partial \rho w}{\partial z}dxdydz
+$$As a result, the total net mass flow is:
+$$
+\left[\frac{\partial (\rho u)}{\partial x}+\frac{\partial (\rho v)}{\partial y}+ \frac{\partial (\rho w)}{\partial z}\right]dxdydz
+$$\par
+The time rate of mass is:
+$$
+\frac{\partial \rho}{\partial t}dxdydz
+$$\par
+Finally, we get the differential form of the continuity equation:
+\begin{equation}
+\frac{\partial \rho}{\partial t} +\frac{\partial (\rho u)}{\partial x}+\frac{\partial (\rho v)}{\partial y}+ \frac{\partial (\rho w)}{\partial z} = 0
+\end{equation}
+$$
+\frac{\partial \rho}{\partial t} +\nabla \cdot(\rho \vec{v})=0
+$$\par
+The moving control volume mode. The mass of the infinitesimally small fluid element is:
+$$
+\delta m = \rho \delta \Omega
+$$
+Since the mass is conserved, we have:
+$$
+\frac{D (\delta m)}{Dt} = \frac{D (\rho \delta \Omega)}{Dt}= 0
+$$
+The derivative by part allows us to get:
+$$
+\frac{D \rho}{Dt} + \frac{\rho}{\delta \Omega}\cdot\frac{D ( \delta \Omega)}{Dt}= 0
+$$\par
+The volume can be calculated as:
+$$
+\delta \Omega = \iint_{\delta S}\vec{v}dS \cdot \delta t
+$$
+$$
+\frac{D ( \delta \Omega)}{Dt} =\lim_{\delta t \to 0} \frac{\delta \Omega}{\delta t}=\lim_{\delta s \to 0}\iint_{\delta S}\vec{v}dS =\lim_{\delta \Omega \to 0}\iiint_{\delta \Omega} (\nabla \cdot \vec{v})d \Omega = (\nabla \cdot \vec{v})\delta \Omega
+$$\par
+As a result, we find another form of the continuity equation:
+\begin{equation}
+\frac{D \rho}{Dt} + \rho  (\nabla \cdot \vec{v})= 0
+\end{equation}
+Note that
+$$
+\frac{D \rho}{Dt} + \rho  (\nabla \cdot \vec{v}) = \frac{\partial \rho}{\partial t} + \vec{v} \cdot\nabla \rho + \rho  (\nabla \cdot \vec{v}) = \frac{\partial \rho}{\partial t} + \nabla \cdot(\rho \vec{v})=0
+$$
+
+\subsection{Conservation of momentum}
+\hspace{5mm} We discuss the surface force first. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
