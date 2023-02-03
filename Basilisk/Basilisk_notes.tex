@@ -1,0 +1,249 @@
+% !TEX TS-program = pdflatex
+% !TEX encoding = UTF-8 Unicode
+
+% This is a simple template for a LaTeX document using the "article" class.
+% See "book", "report", "letter" for other types of document.
+
+\documentclass[12pt]{article} % use larger type; default would be 10pt
+
+\usepackage[utf8]{inputenc} % set input encoding (not needed with XeLaTeX)
+
+%%% Examples of Article customizations
+% These packages are optional, depending whether you want the features they provide.
+% See the LaTeX Companion or other references for full information.
+
+%%% PAGE DIMENSIONS
+\usepackage{geometry} % to change the page dimensions
+\geometry{a4paper} % or letterpaper (US) or a5paper or....
+% \geometry{margins=2in} % for example, change the margins to 2 inches all round
+% \geometry{landscape} % set up the page for landscape
+%   read geometry.pdf for detailed page layout information
+
+\usepackage{graphicx} % support the \includegraphics command and options
+
+% \usepackage[parfill]{parskip} % Activate to begin paragraphs with an empty line rather than an indent
+
+%%% PACKAGES
+\usepackage{booktabs} % for much better looking tables
+\usepackage{array} % for better arrays (eg matrices) in maths
+\usepackage{paralist} % very flexible & customisable lists (eg. enumerate/itemize, etc.)
+\usepackage{verbatim} % adds environment for commenting out blocks of text & for better verbatim
+\usepackage{subfig} % make it possible to include more than one captioned figure/table in a single float
+% These packages are all incorporated in the memoir class to one degree or another...
+
+%%% HEADERS & FOOTERS
+\usepackage{fancyhdr} % This should be set AFTER setting up the page geometry
+\pagestyle{fancy} % options: empty , plain , fancy
+\renewcommand{\headrulewidth}{0pt} % customise the layout...
+\lhead{}\chead{}\rhead{}
+\lfoot{}\cfoot{\thepage}\rfoot{}
+
+%%% SECTION TITLE APPEARANCE
+\usepackage{sectsty}
+\allsectionsfont{\sffamily\mdseries\upshape} % (See the fntguide.pdf for font help)
+% (This matches ConTeXt defaults)
+
+%%% ToC (table of contents) APPEARANCE
+\usepackage[nottoc,notlof,notlot]{tocbibind} % Put the bibliography in the ToC
+\usepackage[titles,subfigure]{tocloft} % Alter the style of the Table of Contents
+\renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
+\renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
+
+%%% END Article customizations
+%%%package added by Wenge
+\usepackage{soul}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\definecolor{mGreen}{rgb}{0,0.6,0}
+\definecolor{mGray}{rgb}{0.5,0.5,0.5}
+\definecolor{mPurple}{rgb}{0.58,0,0.82}
+\definecolor{backgroundColour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{CStyle}{
+    backgroundcolor=\color{backgroundColour},   
+    commentstyle=\color{mGreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{mGray},
+    stringstyle=\color{mPurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    language=C
+}
+
+%%% The "real" document content comes below...
+
+\title{Notes Basilisk CFD}
+\author{Wenge Huang}
+%\date{} % Activate to display a given date or no date (if empty),
+         % otherwise the current date is printed 
+
+\begin{document}
+\maketitle
+
+\section{Codes}
+\subsection{heights.h}
+\hspace{5mm}
+\textbf{
+The “height-function” is a vector field which gives the distance, along each coordinate axis, from the center of the cell to the closest interface defined by a volume fraction field. }\par
+
+That means if the vector is $(x, y ,z)$, \st{the results of the high function will be $(height(h.x[]), h.y, h.z)$}. In this case $h$ itself is a vector and we have the three component of $h$: $(h.x, h.y, h.z)$\par
+\textbf{The distance is normalised with the cell size so that the coordinates of the interface are given by}\par
+\textbf{
+(x, y + Delta*height(h.y[])) or (x + Delta*height(h.x[]), y)
+}Here heigh is a function that takes a scalar h.y[] or h.x[] as an input.
+\par 
+Here Delta is initially defined as the size of the cell
+\vspace{5mm}
+
+\begin{lstlisting}[style=CStyle]
+#define HSHIFT 20.
+
+static inline double height (double H) {
+  return H > HSHIFT/2. ? H - HSHIFT : H < -HSHIFT/2. ? H + HSHIFT : H;
+}
+
+static inline int orientation (double H) {
+  return fabs(H) > HSHIFT/2.;
+}
+\end{lstlisting}
+\par
+There are some other codes to calculate the distance and finally we can get the H which is distance. The we'll use the $height$ function in other place to call and get a good H (which is a scalar). 
+
+
+
+\subsection{curvature.h}
+To compute the curvature, we estimate the derivatives of the height functions in a given direction (x, y or z). We first check that all the heights are defined and that their orientations are the same. We then compute the curvature as:
+$$
+\kappa = \frac{h_{xx}}{(1 + h_x^2)^{3/2}}
+$$
+$$
+\kappa = \frac{h_{xx}(1 + h_y^2) + h_{yy}(1 + h_x^2) - 2h_{xy}h_xh_y}
+{(1 + h_x^2 + h_y^2)^{3/2}}
+$$
+\begin{lstlisting}[style=CStyle]
+#include "heights.h"
+
+#if dimension == 2
+foreach_dimension()
+static double kappa_y (Point point, vector h)
+{
+  int ori = orientation(h.y[]);
+  for (int i = -1; i <= 1; i++)
+    if (h.y[i] == nodata || orientation(h.y[i]) != ori)
+      return nodata;
+  double hx = (h.y[1] - h.y[-1])/2.;
+  double hxx = (h.y[1] + h.y[-1] - 2.*h.y[])/Delta;
+  return hxx/pow(1. + sq(hx), 3/2.);
+}
+
+foreach_dimension()
+static coord normal_y (Point point, vector h)
+{
+  coord n = {nodata, nodata, nodata};
+  if (h.y[] == nodata)
+    return n;
+  int ori = orientation(h.y[]);
+  if (h.y[-1] != nodata && orientation(h.y[-1]) == ori) {
+    if (h.y[1] != nodata && orientation(h.y[1]) == ori)
+      n.x = (h.y[-1] - h.y[1])/2.;
+    else
+      n.x = h.y[-1] - h.y[];
+  }
+  else if (h.y[1] != nodata && orientation(h.y[1]) == ori)
+    n.x = h.y[] - h.y[1];
+  else
+    return n;
+  double nn = (ori ? -1. : 1.)*sqrt(1. + sq(n.x));
+  n.x /= nn;
+  n.y = 1./nn;
+  return n;
+}
+\end{lstlisting}
+\par
+\textbf{We first check that all the heights are defined and that their orientations are the same.} we use the command foreach\_dimension().
+with head file 'heights.h' we somehow calculate the height function h. That means we have h.x, h.y and h.z and also the corresponding orientations. \par
+We now need to choose one of the $x$, $y$ or $z$ height functions to
+compute the curvature. This is done by the function below which
+returns the HF curvature given a volume fraction field *c* and a
+height function field *h*.
+
+\subsection{fractions.h}
+\hspace{5mm}We need to use the fraction function to maintain or define volume and suface fractions either from an initial geometric definition or from an existing volume fraction field.\par
+\begin{lstlisting}[style=CStyle]
+fraction (f, sq(radius) - sq(y) - sq(x)); 
+\end{lstlisting}\par
+Now we're going to discuss how this function works.\par
+The convenience \textbf{macros} below can be used to define volume and surface fraction fields directly from a function.\par
+\begin{lstlisting}[style=CStyle]
+#define fraction(f,func) do {			\
+    vertex scalar phi[];			\
+    foreach_vertex()				\
+      phi[] = func;				\
+    fractions (phi, f);				\
+  } while(0)
+
+#define solid(cs,fs,func) do {			\
+    vertex scalar phi[];			\
+    foreach_vertex()				\
+      phi[] = func;				\
+    fractions (phi, cs, fs);			\
+  } while(0)
+\end{lstlisting}\par
+In this fraction function, it called the vertex variable phi[] and also another function fractions.
+\begin{lstlisting}[style=CStyle]
+struct Fractions {
+  vertex scalar Phi; // compulsory
+  scalar c;          // compulsory
+  face vector s;     // optional
+  double val;        // optional (default zero)
+};
+
+trace
+void fractions (struct Fractions a)
+{
+  vertex scalar Phi = a.Phi;
+  scalar c = a.c;
+  face vector s = automatic (a.s);
+  double val = a.val;
+\end{lstlisting}\par
+
+First, it defines a structure Fraction with members Phi (capital P) and c and others.
+Then the structure is renamed as a. So we have a.Phi, a.c and so on. \par
+
+
+
+\subsection{Example Height functions}
+We need to use fraction function to get the volume fraction of the computation domain:
+\begin{lstlisting}[style=CStyle]
+scalar c[];
+fraction (c, - (0.2 - sqrt(sq(x+0.2) + sq(y+0.2))));
+\end{lstlisting}\par
+With the volume fraction $c$ known, we can use the height function to calculate the height:
+\begin{lstlisting}[style=CStyle]
+ vector h[];
+ heights (c, h);
+\end{lstlisting}The heights() function takes a volume fraction field c and returns the height function vector field h.
+\par
+Also, we can use the height function to calculate the calvature:
+\begin{lstlisting}[style=CStyle]
+  scalar kappa[];
+  curvature (c, kappa);
+\end{lstlisting}
+
+
+
+
+
+
+
+\end{document}
