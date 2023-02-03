@@ -191,15 +191,185 @@ $$
 \frac{D \rho}{Dt} + \rho  (\nabla \cdot \vec{v}) = \frac{\partial \rho}{\partial t} + \vec{v} \cdot\nabla \rho + \rho  (\nabla \cdot \vec{v}) = \frac{\partial \rho}{\partial t} + \nabla \cdot(\rho \vec{v})=0
 $$
 
+
+
 \subsection{Conservation of momentum}
-\hspace{5mm} We discuss the surface force first. 
+\hspace{5mm} We discuss the surface force first. Unlike body force which can be moved to a mass center. The surface force depends on the surface area, more specifically: the surface area and normal vector. We can say that what specific unit surface area is the normal vector $\vec{n}$. Force is another vector. Thus tensor is an operator \textbf{which maps from one vector (the normal vector of the surface) to another vector (the force vector)}. \par
+Consider a fluid volume with characteristic length $R$. The body force is proportional to the volume which scales as $R^{3}$. The surface force is proportional to the total surface area, which scales as $R^{2}$. Thus, as $R$ approaches zero, the total body force can not be balanced by the total surface force. Thus, we should consider the body force and the surface force individually/independently.\par
+ The stress tensor is symmetrical:
+ $$
+ \sigma_{kj} =  \sigma_{jk} 
+ $$\par
+ The stress tensor $ \sigma_{ij}$ can be expressed as the sum of an isotropic part and a non-isotropic part:
+$$
+  \sigma_{ij} = -p\delta_{ij} +d_{ij}
+ $$
+ For a Newtonian fluid, it can be expressed as:
+ $$
+ \sigma = -pI +T
+ $$
+$$
+\left(
+\begin{array} {ccc}
+\sigma_{xx} & \tau_{xy} & \tau_{xz} \\
+\tau_{yx} & \sigma_{yy} & \tau_{yz} \\
+\tau_{zx} & \tau_{zy} &\sigma_{zz}
+\end{array}
+\right)
+=-
+\left(
+\begin{array} {ccc}
+p & 0 & 0 \\
+0 & p & 0 \\
+0 & 0 &p
+\end{array}
+\right) +
+\left(
+\begin{array} {ccc}
+\sigma_{xx} + p & \tau_{xy} & \tau_{xz} \\
+\tau_{yx} & \sigma_{yy} + p& \tau_{yz} \\
+\tau_{zx} & \tau_{zy} &\sigma_{zz}+ p
+\end{array}
+\right)
+$$
+$$
+\left(
+\begin{array} {ccc}
+\sigma_{xx} & \tau_{xy} & \tau_{xz} \\
+\tau_{yx} & \sigma_{yy} & \tau_{yz} \\
+\tau_{zx} & \tau_{zy} &\sigma_{zz}
+\end{array}
+\right)
+=-
+\left(
+\begin{array} {ccc}
+p & 0 & 0 \\
+0 & p & 0 \\
+0 & 0 &p
+\end{array}
+\right) +
+\left(
+\begin{array} {ccc}
+\tau_{xx}  & \tau_{xy} & \tau_{xz} \\
+\tau_{yx} & \tau_{yy}& \tau_{yz} \\
+\tau_{zx} & \tau_{zy} &\tau_{zz}
+\end{array}
+\right)
+$$
+\par
+The $i-$compoment of the surface force on a small surface area $\delta S$ is $\sigma_{ij}n_{j}\delta S$. We integrate over the surface to obtain:
+$$
+\iint_{S}\sigma_{ij}n_{j}\delta S = \iiint_{V} \frac{\partial \sigma_{ij}}{\partial x_{j}}dV
+$$\par 
+The change of momentum is expressed as:
+$$
+\frac{D}{Dt}\iiint_{V} \rho \vec{v}dV 
+$$\par
+Since $\frac{D}{Dt}$ is applied to the fluid element. When it is applied to the integral, we can apply the substantial derivative to each fluid element and then integrate them together. 
+$$
+\frac{D}{Dt}\iiint_{V} \rho \vec{v}dV  = \\frac{D(\rho \vec{v}dV)}{Dt}  = \iiint_{V}\rho \frac{D\vec{v}}{Dt} dV+\iiint_{V}\vec{v}\frac{D(\rho dV)}{Dt} = \iiint_{V}\rho \frac{D\vec{v}}{Dt} dV
+$$Since $\frac{D(\rho dV)}{Dt}$ = 0.\par
+This can be applied to arbitrary quantities:
+$$
+\frac{D}{Dt}\iiint_{V} \rho \theta dV = \iiint_{V}\rho \frac{D\theta}{Dt} dV
+$$\par
+Now we obtain the equation for the conservation of momentum:
+\begin{equation}
+\iiint_{V}\rho \frac{D\vec{v}_{i}}{Dt} dV = \iiint_{V}F_{i}\rho dV + \iiint_{V} \frac{\partial \sigma_{ij}}{\partial x_{j}}dV
+\end{equation}
+$$
+\left(
+\begin{array} {ccc}
+\sigma_{xx} & \tau_{xy} & \tau_{xz} \\
+\tau_{yx} & \sigma_{yy} & \tau_{yz} \\
+\tau_{zx} & \tau_{zy} &\sigma_{zz}
+\end{array}
+\right)
+=-
+\left(
+\begin{array} {ccc}
+p & 0 & 0 \\
+0 & p & 0 \\
+0 & 0 &p
+\end{array}
+\right) +
+\left(
+\begin{array} {ccc}
+\tau_{xx}  & \tau_{xy} & \tau_{xz} \\
+\tau_{yx} & \tau_{yy}& \tau_{yz} \\
+\tau_{zx} & \tau_{zy} &\tau_{zz}
+\end{array}
+\right)
+$$
+We have the differential form:
+$$
+\rho \frac{Du}{Dt} = - \frac{\partial p}{\partial x}+\frac{\partial \tau_{xx}}{\partial x}+\frac{\partial \tau_{xy}}{\partial y} + \frac{\partial \tau_{xz}}{\partial z} +\rho F_{x}
+$$
+$$
+\rho \frac{Dv}{Dt} = - \frac{\partial p}{\partial y}+\frac{\partial \tau_{yx}}{\partial x}+\frac{\partial \tau_{yy}}{\partial y} + \frac{\partial \tau_{yz}}{\partial z} +\rho F_{y}
+$$
+$$
+\rho \frac{Dw}{Dt} = - \frac{\partial p}{\partial z}+\frac{\partial \tau_{zx}}{\partial x}+\frac{\partial \tau_{zy}}{\partial y} + \frac{\partial \tau_{zz}}{\partial z} +\rho F_{z}
+$$\par
+The left-hand side substantial derivative can be written as:
+$$
+\rho \frac{Du}{Dt} = \rho \left(  \frac{\partial u}{\partial t}+\vec{v}\cdot \nabla u\right) = \frac{\partial (\rho u)}{\partial t}-u \frac{\partial \rho}{\partial t} +\vec{v}\cdot \rho\nabla u=\frac{\partial (\rho u)}{\partial t}-u \frac{\partial \rho}{\partial t} +\nabla (\rho u\vec{v}) - u\nabla (\rho\vec{v})
+$$
+$$
+\frac{\partial (\rho u)}{\partial t}-u \frac{\partial \rho}{\partial t} +\nabla (\rho u\vec{v}) - u\nabla (\rho\vec{v})=\frac{\partial (\rho u)}{\partial t}+\nabla (\rho u\vec{v}) -u[\frac{\partial \rho}{\partial t} +\nabla (\rho\vec{v})] = \frac{\partial (\rho u)}{\partial t}+\nabla (\rho u\vec{v})
+$$Thus, we get the conservation form of the Navier-Stokes equation:
+$$
+\frac{\partial (\rho u)}{\partial t}+\nabla (\rho u\vec{v}) = - \frac{\partial p}{\partial x}+\frac{\partial \tau_{xx}}{\partial x}+\frac{\partial \tau_{xy}}{\partial y} + \frac{\partial \tau_{xz}}{\partial z} +\rho F_{x}
+$$
+$$
+\frac{\partial (\rho v)}{\partial t}+\nabla (\rho v\vec{v}) = - \frac{\partial p}{\partial y}+\frac{\partial \tau_{yx}}{\partial y}+\frac{\partial \tau_{yy}}{\partial y} + \frac{\partial \tau_{yz}}{\partial z} +\rho F_{y}
+$$
+$$
+\frac{\partial (\rho w)}{\partial t}+\nabla (\rho w\vec{v}) = - \frac{\partial p}{\partial z}+\frac{\partial \tau_{zx}}{\partial x}+\frac{\partial \tau_{zy}}{\partial y} + \frac{\partial \tau_{zz}}{\partial z} +\rho F_{z}
+$$\par
+When the fluid is Newtonian, we have:
+$$
+\tau_{xx} = \lambda(\nabla \cdot \vec{v})+2\mu \frac{\partial u}{\partial x}
+$$
+$$
+\tau_{yy} = \lambda(\nabla \cdot \vec{v})+2\mu \frac{\partial v}{\partial y}
+$$
+$$
+\tau_{zz} = \lambda(\nabla \cdot \vec{v})+2\mu \frac{\partial w}{\partial z}
+$$
+$$
+\tau_{xy}=\tau_{yx}=\mu \left[\frac{\partial v}{\partial x}+\frac{\partial u}{\partial y} \right]
+$$
+$$
+\tau_{xz}=\tau_{zx}=\mu \left[\frac{\partial w}{\partial x}+\frac{\partial u}{\partial z} \right]
+$$
+$$
+\tau_{yz}=\tau_{zy}=\mu \left[\frac{\partial v}{\partial z}+\frac{\partial w}{\partial y} \right]
+$$where $\mu$ is the molecular viscosity coefficient and $\lambda$ is the second viscosity coefficient. Stokes made the hypothesis that:
+$$
+\lambda = -\frac{2}{3} \mu
+$$\par
+When the fluid is incompressible, which means the density is constant $\frac{D \rho}{Dt} = 0$, we have the gradient of the velocity is zero $\nabla \cdot \vec{v} = 0$. With some assumptions we have:
+$$
+\frac{\partial }{\partial x}\mu \left[\frac{\partial u}{\partial x}+\frac{\partial u}{\partial x} \right]+\frac{\partial }{\partial y}\mu \left[\frac{\partial v}{\partial x}+\frac{\partial u}{\partial y} \right] + \frac{\partial }{\partial z}\mu \left[\frac{\partial w}{\partial x}+\frac{\partial u}{\partial z} \right]
+$$
+$$
+\mu \left[\frac{\partial^{2} u}{\partial x^{2}} + \frac{\partial^{2} u}{\partial y^{2}}+\frac{\partial^{2} u}{\partial z^{2}}  \right]+\mu\left[\frac{\partial }{\partial x}\frac{\partial u}{\partial x}+\frac{\partial }{\partial y}\frac{\partial v}{\partial x} +\frac{\partial }{\partial z}\frac{\partial w}{\partial x}\right]
+$$
+$$
+\mu \left[\frac{\partial^{2} u}{\partial x^{2}} + \frac{\partial^{2} u}{\partial y^{2}}+\frac{\partial^{2} u}{\partial z^{2}}  \right]+\mu\frac{\partial }{\partial x}\left[\nabla \cdot \vec{v}  \right]=\mu \nabla^{2}u
+$$\par 
+Thus, for the incompressible flow, we have:
+\begin{equation}
+\rho \frac{D \vec{v}}{Dt} = -\nabla p + \mu \nabla^{2}\vec{v} +\rho \vec{F}
+\end{equation}
+\begin{equation}
+\rho \frac{\partial \vec{v}}{\partial t} + {\rho (\vec{v} \cdot \nabla)\vec{v}} = -\nabla p + \mu \nabla^{2}\vec{v} +\rho \vec{F}
+\end{equation}
 
 
 
-
-
-
-
+\subsection{Conservation of energy}
 
 
 
