@@ -282,8 +282,8 @@ u(x, t) = \sum_{n=1}^{\infty}\frac{2}{L}\int_{0}^{L}f(x')sin(\frac{n\pi}{L}x')dx
 \hspace{5mm}Now we are trying to solve the heat equation with the source term:
 \begin{equation}
 \left \{ \begin{array}{llc}
-\pdv{u}{t} =\frac{\partial^{2}u}{\partial x^{2}} + g(x, t)& x \in (0,L),  t>0 \\
-u(0,t) = 0, u(L, t) = 0& t>0 \\
+\pdv{u}{t} =\frac{\partial^{2}u}{\partial x^{2}} + g(x, t)& x \in (0,L),  t>0 \\ \\
+u(0,t) = 0, u(L, t) = 0& t>0 \\ \\
 u(x, 0) = f(x) & 0 \leq x \leq L
 \end{array}\right.
 \end{equation}\par
@@ -387,38 +387,56 @@ u(x, t) = \sum_{n = 1}^{\infty} \frac{2}{L}\int_{0}^{L}f(x')sin(\frac{n\pi}{L}x'
 
 
 
+
+\subsection{Non-homogeneous b.c.}
+\hspace{5mm}Now we consider the fully nonhomogeneous problem, which means non-homogeneous source term in the equation (source term) and also in the boundary conditions.\par
+Let's consider the following equation:
+\begin{equation}
+\left \{ \begin{array}{llc}
+\pdv{u}{t} =\frac{\partial^{2}u}{\partial x^{2}} + g(x, t)& x \in (0,L),  t>0 \\ 
+\\
+u(0,t) = u_{1}(t), u(L, t) = u_{2}(t)& t>0 \\ 
+\\
+u(x, 0) = f(x) & 0 \leq x \leq L
+\end{array}\right.
+\end{equation}here the boundary condition is called the non-homogeneous Dirichlet b.c.\par
+Let's consider a new function $\theta(x, t)$:
+$$
+\theta(x, t) = u(x, t) -w(x, t)
+$$Let $w(0, t) = u_{1}(t)$ and $w(L, t) = u_{2}(t)$, we can have the new $\theta$ function to fit the homogeneous boundary conditions.\par
+It is always a good choice to choose the linear relation. Thus, we can have:
+$$
+w(x, t) = \frac{L-x}{L}u_{1}(t) + \frac{x}{L}u_{2}(t)
+$$\par
+We can plug $\theta$ inside the function to get:
+$$
+\frac{\partial \theta}{\partial t} + \frac{L-x}{L}u'_{1}(t)+\frac{x}{L}u'_{2}(t) = \frac{\partial^{2} \theta}{\partial x^{2}} + g(x, t)
+$$\par
+Thus, the problem is transferred back to the source term problem:
+\begin{equation}
+\left \{ \begin{array}{llc}
+\pdv{\theta}{t} =\frac{\partial^{2}\theta}{\partial x^{2}} + \tilde{g}(x, t)& x \in (0,L),  t>0 \\ 
+\\
+\theta(0,t) = 0, \theta(L, t) = 0& t>0 \\ 
+\\
+\theta(x, 0) = \tilde{f}(x) & 0 \leq x \leq L
+\end{array}\right.
+\end{equation}
+$$
+\tilde{g}(x, t) = g(x, t) -\frac{L-x}{L}u'_{1}(t)-\frac{x}{L}u'_{2}(t)
+$$
+$$
+\tilde{f}(x, t) = f(x)-\frac{L-x}{L}u_{1}(0)-\frac{x}{L}u_{2}(0)
+$$
+
+
+
+
+
+
+
+
+
+
+
 \end{document}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
