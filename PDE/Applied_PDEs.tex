@@ -432,6 +432,144 @@ $$
 
 
 
+\subsection{Wave equation}
+\hspace{5mm}
+Now we consider the homogeneous wave equation:
+\begin{equation}
+\left \{ \begin{array}{llc}
+\frac{\partial^{2} u}{\partial t^{2}} =c^{2}\frac{\partial^{2}u}{\partial x^{2}} & x \in (0,L),  t>0 \\ 
+\\
+u(0,t) = 0, u(L, t) = 0& t>0 \\ 
+\\
+u(x, 0) = \phi_{1}(x), \pdv{u}{t} =\phi_{2}(x) & 0 \leq x \leq L
+\end{array}\right.
+\end{equation}\par
+First, we consider the homogeneous BVP:
+$$
+\left \{ \begin{array}{llc}
+\frac{\partial^{2} u}{\partial t^{2}} =c^{2}\frac{\partial^{2}u}{\partial x^{2}} & x \in (0,L),  t>0 \\ 
+\\
+u(0,t) = 0, u(L, t) = 0& t>0 \\ 
+\end{array}\right.
+$$
+\par
+The homogeneous BVP wave equation has the following general solution set:
+$$
+u_{n}(x, t) = V_{n}(x)T_{n}(x)=\sin(\frac{n\pi}{L}x)\left[a_{n}\cos(\frac{cn\pi}{L}t) +
+ b_{n}\sin(\frac{cn\pi}{L}t)\right], n\in N
+$$\par
+Now, back to the IBVP Eq(23), in order to  satisfy the initial condition, we are looking for the solution in the form of:
+\begin{equation}
+u(x, t) = \sum_{n=1}^{\infty}\sin(\frac{n\pi}{L}x)\left[a_{n}\cos(\frac{cn\pi}{L}t) +
+ b_{n}\sin(\frac{cn\pi}{L}t)\right]
+\end{equation}
+\par
+We know that when $t = 0$, we have $\sin(\frac{cn\pi}{L}t)=0$ and $\cos(\frac{cn\pi}{L}t)=1$. Thus we have:
+\begin{equation}
+u(x, 0)=
+\sum_{n=1}^{\infty}\sin(\frac{n\pi}{L}x)\cdot a_{n} = \phi_{1}(x)
+\end{equation}
+\begin{equation}
+u'(x, 0) =
+\sum_{n=1}^{\infty}\sin(\frac{n\pi}{L}x)\left[\frac{cn\pi}{L}
+ b_{n}\right] = \phi_{2}(x)
+\end{equation}\par
+Recall the orthogonality we have:
+$$
+\int_{0}^{L}\sin(\frac{n\pi}{L}x)\sin(\frac{m\pi}{L}x) = \left\{
+\begin{array}{lll}
+ 0& m\neq n \\
+\frac{L}{2} & m= n
+\end{array}\right.
+$$ \par
+Thus, we can find that:
+$$
+a_{n}=\frac{2}{L}\int_{0}^{L}\phi_{1}(x)\sin(\frac{n\pi}{L}x)dx
+$$
+$$
+b_{n}=\frac{2}{cn\pi}\int_{0}^{L}\phi_{2}(x)\sin(\frac{n\pi}{L}x)dx
+$$\par
+To summarize, the solution to the IBVP is$u(x, t)$:
+$$
+\sum_{n=1}^{\infty}\sin(\frac{n\pi}{L}x)\left[\frac{2}{L}\int_{0}^{L}\phi_{1}(x')\sin(\frac{n\pi}{L}x')dx'\cos(\frac{cn\pi}{L}t) +
+\frac{2}{cn\pi}\int_{0}^{L}\phi_{2}(x')\sin(\frac{n\pi}{L}x')dx'\sin(\frac{cn\pi}{L}t)\right]
+$$\par
+In the case with non-homogeneous B.C., we'll do the change of variable to make the boundary condition homogeneous as in the heat equation case. In the case with non-homogeneous source term, we need to find a particular solution for the inhomogeneous BVP using variation of parameter formula. \par
+Boundary conditions determine the shape of the eigenfunctions. \\
+\textbf{Dirichlet} boundary conditions (with rectangular domain in 1D) we have the \textbf{Fourier sine series}:
+$$
+\left\{ \sin(\frac{n\pi}{L}x) | n\in N
+\right\}
+$$\\
+\textbf{Neuman} boundary conditions, we have \textbf{Fourier cosine series}:
+$$
+\left\{ \cos(\frac{n\pi}{L}x) | n\in N
+\right\}
+$$\\
+For periodic boundary condtions, we will get both the sine and cosine eigenfunctions.\par
+For non-rectangular domain, the eigenfunctions may not be trigonometric functions. \textbf{Can You Hear the Shape of a Drum?}\par
+
+
+\subsection{Problems in higher(spatial) dimentions}
+\hspace{5mm}
+Now we consider a 2D(spatial) heat equation:
+\begin{equation}
+\left\{
+\begin{array}{lll}
+u_{t} = u_{xx} + u_{yy} & 0<x<1, 0<y<1, t>0\\
+ \\
+ u(0, y, t)=0,  u(1, y, t)=0 \\
+  u(x, 0, t)=0,  u(x, 1, t)=0 & t >0 \\ \\
+ u(x, y, 0) = f(x, y)
+\end{array}\right.
+\end{equation}\par
+we also do the separation of variable:
+$$
+u(x, y, t) = X(x)Y(y)T(t)
+$$plugging it into the 2D heat equation, we get:
+$$
+X(x)Y(y)T'(t) = X''(x)Y(y)T(t) + X(x)Y''(y)T(t)
+$$
+$$
+\frac{T'(t)}{T(t)}= \frac{X''(x)}{X(x)}+\frac{Y''(y)}{Y(y)} = \beta
+$$\par
+Thus, we have:
+\begin{equation}
+\frac{T'(t)}{T(t)}= \beta
+\end{equation}
+$$
+\frac{X''(x)}{X(x)}= \beta - \frac{Y''(y)}{Y(y)} = \mu
+$$
+\begin{equation}
+\left\{
+\begin{array}{lll}
+X''(x) = \mu X(x)\\
+Y''(y) = (\beta - \mu)Y(y)
+\end{array}\right.
+\end{equation}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
