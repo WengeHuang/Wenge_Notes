@@ -282,8 +282,8 @@ u(x, t) = \sum_{n=1}^{\infty}\frac{2}{L}\int_{0}^{L}f(x')sin(\frac{n\pi}{L}x')dx
 \hspace{5mm}Now we are trying to solve the heat equation with the source term:
 \begin{equation}
 \left \{ \begin{array}{llc}
-\pdv{u}{t} =\frac{\partial^{2}u}{\partial x^{2}} + g(x, t)& x \in (0,L),  t>0 \\ \\
-u(0,t) = 0, u(L, t) = 0& t>0 \\ \\
+\pdv{u}{t} =\frac{\partial^{2}u}{\partial x^{2}} + g(x, t)& x \in (0,L),  t>0 \\
+u(0,t) = 0, u(L, t) = 0& t>0 \\
 u(x, 0) = f(x) & 0 \leq x \leq L
 \end{array}\right.
 \end{equation}\par
@@ -384,7 +384,6 @@ u(x, t) = \sum_{n = 1}^{\infty} \frac{2}{L}\int_{0}^{L}f(x')sin(\frac{n\pi}{L}x'
 \right]
 \end{multlined}
 \end{equation}
-
 
 
 
@@ -518,11 +517,12 @@ Now we consider a 2D(spatial) heat equation:
 \begin{array}{lll}
 u_{t} = u_{xx} + u_{yy} & 0<x<1, 0<y<1, t>0\\
  \\
- u(0, y, t)=0,  u(1, y, t)=0 \\
+ u(0, y, t)=0,  u_{x}(1, y, t)=0 \\
   u(x, 0, t)=0,  u(x, 1, t)=0 & t >0 \\ \\
  u(x, y, 0) = f(x, y)
 \end{array}\right.
-\end{equation}\par
+\end{equation}we have one Neumann b.c. here.
+\par
 we also do the separation of variable:
 $$
 u(x, y, t) = X(x)Y(y)T(t)
@@ -546,7 +546,142 @@ $$
 X''(x) = \mu X(x)\\
 Y''(y) = (\beta - \mu)Y(y)
 \end{array}\right.
+\end{equation}\par
+Applying the boundary conditions, we can find:
+$$
+u(0, y, t) = 0 \Rightarrow  X(0) =0
+$$
+$$
+u_{x}(1, y, t) = 0 \Rightarrow X'(1) = 0
+$$
+$$
+u(x, 0, t) = 0 \Rightarrow Y(0) = 0
+$$
+$$
+u(x, 1, t) = 0 \Rightarrow Y(1) = 0
+$$
+Thus we have the ODEs:
+\begin{equation}
+\left\{
+\begin{array}{lll}
+X''(x) = \mu X(x) & 0<x<1\\
+X(0) = 0, X'(1) =0 
+\end{array}
+\right.
 \end{equation}
+For this ODE, we have the different eignevalues and eigenfunctions from the past heat equation:
+\begin{equation}
+\mu_{n}= -(n\pi - \frac{\pi}{2})^{2}
+\end{equation}
+\begin{equation}
+X_{n}(x) = \sin[(n\pi- \frac{\pi}{2})x], n\in N
+\end{equation}\par
+Then for each $\mu = \mu_{n}$, we have:
+\begin{equation}
+\left\{
+\begin{array}{lll}
+Y''(y) = (\beta-\mu_{n}) Y(y) & 0<y<1\\
+Y(0) = 0, Y(1) =0 
+\end{array}
+\right.
+\end{equation}\par
+The eigenvalues and the eigenfucntions are:
+$$
+\beta -\mu_{n} = -(m\pi)^{2}
+$$
+$$
+Y_{m}(y) = \sin(m\pi y), m \in N
+$$
+Note that $\beta$ depends on two indices $m$ \& $n$(which are independent with each other)
+$$
+\beta_{m, n} = -(n\pi- \frac{\pi}{2}) - (m\pi)^{2}
+$$\par
+Now back to Eq(28) we get the
+$$
+\frac{T'(t)}{T(t)}= \beta
+$$
+$$
+T'_{m, n}(t) = -[(n\pi- \frac{\pi}{2})+ (m\pi)^{2}]T_{m, n}(t)
+$$
+\begin{equation}
+T_{m, n}(t) = C_{m, n}e^{ -[(n\pi- \frac{\pi}{2})+ (m\pi)^{2}]t}
+\end{equation}\par
+For the BVP we have the solution:
+\begin{equation}
+u(x, y, t) = \sum_{m=1}^{\infty}\sum_{n=1}^{\infty} C_{m, n}e^{ -[(n\pi- \frac{\pi}{2})+ (m\pi)^{2}]t}\sin[(n\pi- \frac{\pi}{2})x] \sin(m\pi y)
+\end{equation}\par
+Using the orthogonal property to determine $C_{m, n}$
+$$
+\int_{0}^{1}\int_{0}^{1}f(x, y)X_{p}(x)Y_{q}(y)dxdy =
+\sum_{m, n=1}^{\infty}\int_{0}^{1}\int_{0}^{1}C_{m, n}X_{n}(x)X_{p}(x)Y_{m}(y)Y_{q}(y)dxdy
+$$
+Recall that 
+$$
+\int_{0}^{1}X_{n}(x)X_{p}(x)dx =\left\{
+\begin{array}{lll}
+0 &n\neq p \\
+\frac{1}{2} & n=p
+\end{array}\right.
+$$\par
+Thus, we can find that
+$$
+C_{p, q} = 4 \int_{0}^{1}\int_{0}^{1}f(x, y)X_{p}(x)Y_{q}(y)dxdy
+$$
+
+
+
+\subsection{Laplace equation}
+\hspace{5mm} In the section we do the separation of variable for the Laplace equation. Consider the following BVP:
+\begin{equation}
+\left\{
+\begin{array}{lll}
+u_{xx}+u_{yy} = 0& 0<x<1, 0<y<1 \\
+ \\
+u(x, 0) =0, u(x, 1) =x-x^{2}& 0\leq x\leq1\\
+ \\
+u(0, y) =0, u(1, y) =0& 0\leq y\leq1\\
+\end{array}
+\right.
+\end{equation}Note that we no longer have the initial condition since there is no ''time'' dependence.\par
+The solutions to Laplace equation $\nabla u=0$ are the steady state solutions to the heat equation. we have $u(x,y)=X(x)Y(y)$:
+$$
+X''(x)Y(y) +X(x)Y''(y) = 0
+$$
+$$
+\frac{X''(x)}{X(x)} = -\frac{Y''(x)}{Y(x)}=\beta
+$$\par
+With the boundary condition $u(0, y) =0, u(1, y) =0$, we have the ODE for $x$:
+$$
+\left\{
+\begin{array}{lll}
+X''(x) = \beta X(x) & 0<x<1\\
+X(0) = 0, X(1) =0 
+\end{array}
+\right.
+$$
+This is what we have solved before with the eigenvalues and eigenfunctions:
+$$
+\beta_{n}= -(n\pi)^{2}
+$$
+$$
+X_{n}(x) = \sin(n\pi x), n\in N
+$$\par
+Also, we have the functions for $Y(y)$:
+$$
+Y''(x) =(n\pi)^{2} Y(x)
+$$ we can find that 
+$$
+Y_{n}(y) = C_{1}e^{n\pi y}+C_{2}e^{-n\pi y}
+$$with one boundary condition that $Y(0) = 0$
+\par
+We have the general solution as:
+$$
+Y_{n}(y) = C_{1}(e^{n\pi y}-e^{-n\pi y}) =2C_{1}\sinh(n\pi y)
+$$
+
+
+
+
 
 
 
@@ -578,3 +713,37 @@ Y''(y) = (\beta - \mu)Y(y)
 
 
 \end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
