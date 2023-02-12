@@ -1,0 +1,10 @@
+
+%relation between droplet radius and droplet height
+function [a] = h(r,rc,ca)
+R=rc/sin(ca);
+H=rc*tan(ca/2);
+
+a=r;
+
+end
+

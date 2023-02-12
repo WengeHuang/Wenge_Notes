@@ -1,0 +1,18 @@
+
+%Legendre Function
+function [P] = Legendre_f1(a,t)
+e=10^(-4);
+dkc=0.01;
+p1=2/pi*coth(pi*t);
+p2=0;
+for kc=a+e:dkc:10-(a+e)
+    b=sin(t*kc)/sqrt(2*cosh(kc)-2*cosh(a))*dkc;
+    p2=p2+b;
+end
+
+
+
+
+
+end
+
