@@ -1,0 +1,210 @@
+%计算冷凝器换热面积
+%有机郎肯循环冷凝面积计算（管壳式换热器，热源：有机工质；冷源：水）
+%后缀heat表示热源，cool表示冷源
+function condenser1_result=A_condenser1(fluid,Q_heat_in,m_heat,m_cool,h_heat_in,h_heat_out,P_heat,h_cool_in,h_cool_out,P_cool)
+
+
+num_tube=245;
+diameter_in=0.025;%管子标准选25*2.5
+d=diameter_in;
+diameter_out=0.030;%管外径
+d_wall=0.0025;      %管壁厚度
+L_wall=49.8;   %管子用0.5%的碳钢，导热系数为L_wall
+Di=0.6;   %壳体的内径
+lb=0.45;  %折流版间距为450mm
+k_wall=d_wall/L_wall;   %管壁热阻
+P_t=0.032;  %换热管中心距
+pi=3.1415926;
+A_tube=0.25*pi*diameter_in^2;
+n=100;                                  %分成了100小段
+G_heat=m_heat/num_tube/A_tube; 
+Pc=refpropm('P','C',0,'',0,fluid);      %临界压力
+if Q_heat_in>1    %冷凝器进口为过热蒸汽，此时冷凝器分为过热区和两相区   %Q为干度
+%————以下先计算两相区————————
+
+    h_heat_dew=refpropm('H','P',P_heat,'Q',1,fluid);
+    dh_heat_two_phase=(h_heat_dew-h_heat_out)/n;
+    density_heat_liq=refpropm('D','P',P_heat,'Q',0,fluid);      %饱和液体密度
+    Cp_heat_liq=refpropm('C','P',P_heat,'Q',0,fluid);    %液态比热容[J/(kg K)]
+    v_heat_liq=refpropm('V','P',P_heat,'Q',0,fluid); %液态动力粘度[Pa*s]
+    conductivity_heat_liq=refpropm('L','P',P_heat,'Q',0,fluid); %液态导热率[W/(m K)]
+    Pr_heat_liq=v_heat_liq*Cp_heat_liq/conductivity_heat_liq;%有机工质饱和液体的普朗特数
+    Re_heat_liq=G_heat*diameter_in/v_heat_liq;               %雷诺数
+
+    density_heat_vapor=refpropm('D','P',P_heat,'Q',1,fluid);    %饱和气体密度
+    h_heat_two_phase(1)=h_heat_out;                             %假设的是有机工质经过冷凝器之后是以饱和液态出去的，所以起点是出口焓
+    Q_heat_two_phase(1)=0;
+    T_heat_two_phase(1)=refpropm('T','P',P_heat,'H',h_heat_two_phase(1),fluid);
+    
+    for i=1:n
+        h_heat_two_phase(i+1)=h_heat_two_phase(i)+dh_heat_two_phase;     %以进口焓值为起点，逐渐加微分后的饱和气态Q=1，和饱和液态Q=0，的差
+        Q_heat_two_phase(i+1)=refpropm('Q','P',P_heat,'H',h_heat_two_phase(i+1),fluid);
+        Q_heat_two_phase_mean(i)=0.5*(Q_heat_two_phase(i+1)+Q_heat_two_phase(i));
+        x(i)=Q_heat_two_phase_mean(i);
+        T_heat_two_phase(i+1)=refpropm('T','P',P_heat,'H',h_heat_two_phase(i+1),fluid);
+        %v_heat_two_phase_mean(i)=refpropm('V','P',P_heat,'Q',Q_heat_two_phase_mean(i),fluid);     %每段平均粘度
+        %density_heat_two_phase_mean(i)=refpropm('D','P',P_heat,'Q',Q_heat_two_phase_mean(i),fluid); %有机工质平均密度
+        %conductivity_heat_two_phase_mean(i)=refpropm('L','P',P_heat,'Q',Q_heat_two_phase_mean(i),fluid); %有机工质平均导热系数
+        %Cp_heat_two_phase_mean(i)=refpropm('C','P',P_heat,'Q',Q_heat_two_phase_mean(i),fluid);   %有机工质平均比热容
+        %Pr_heat_two_phase(i)=v_heat_two_phase_mean(i)*Cp_heat_two_phase_mean(i)/conductivity_heat_two_phase_mean(i);%普朗克数
+        %pr=density_heat_vapor/density_heat_liq;             %pr为气体密度比液体密度， 参考文献
+        pr=P_heat/Pc;
+        U_heat_two_phase(i)=0.023*(Re_heat_liq^0.8)*(Pr_heat_liq^0.4)*(conductivity_heat_liq/d)*(((1-x(i))^0.8)+3.8*(x(i)^0.76)*((1-x(i))^0.04)/(pr^0.38));
+    end
+%——冷源为水，走壳程——————————
+    h_cool_dew=m_heat*(h_heat_dew-h_heat_out)/m_cool+h_cool_in;
+    dh_cool_two_phase=(h_cool_dew-h_cool_in)/n;
+    h_cool_two_phase(1)=h_cool_in;
+    T_cool_two_phase(1)=refpropm('T','P',P_cool,'H',h_cool_two_phase(1),'water');
+    d_es=1.10*P_t^2/diameter_out-diameter_out;     %壳程的当量直径
+%G_cool=m_cool/num_tube/A_tube;
+    As=lb*Di*(1-diameter_out/P_t);              %As为流体流过管间的最大面积
+    
+    for i=1:n
+        h_cool_two_phase(i+1)=h_cool_two_phase(i)+dh_cool_two_phase;
+        T_cool_two_phase(i+1)=refpropm('T','P',P_cool,'H',h_cool_two_phase(i+1),'water');
+        T_cool_two_phase_mean(i)=0.5*(T_cool_two_phase(i+1)+T_cool_two_phase(i));
+        density_cool_two_phase_mean(i)=refpropm('D','T',T_cool_two_phase_mean(i),'P',P_cool,'water'); %冷却水的平均密度
+        v_cool_two_phase_mean(i)=refpropm('V','T',T_cool_two_phase_mean(i),'P',P_cool,'water');    %冷却水的平均动力粘度
+        conductivity_cool_two_phase_mean(i)=refpropm('L','T',T_cool_two_phase_mean(i),'P',P_cool,'water'); %冷却水的平均导热系数
+        Cp_cool_two_phase_mean(i)=refpropm('C','T',T_cool_two_phase_mean(i),'P',P_cool,'water');    %冷却水的平均比热容
+        u0_cool_two_phase(i)=m_cool/density_cool_two_phase_mean(i)/As;
+    %Re_cool_two_phase(i)=d_es*G_cool/v_cool_two_phase_mean(i);       %雷诺数
+        Pr_cool_two_phase(i)=v_cool_two_phase_mean(i)*Cp_cool_two_phase_mean(i)/conductivity_cool_two_phase_mean(i);  %普朗克数
+    %f_cool_two_phase(i)=(0.790*log(Re_cool_two_phase(i))-1.64)^(-2);                %f为Dancy摩擦系数
+    %Nu_cool_two_phase(i)=(f_cool_two_phase(i)*Re_cool_two_phase(i)*Pr_cool_two_phase(i)/8)/(12.7*(f_cool_two_phase(i)/8)^0.5*((Pr_cool_two_phase(i))^(2/3)-1)+1.07); %努赛尔数
+    %U_cool_two_phase(i)=conductivity_cool_two_phase_mean(i)*Nu_cool_two_phase(i)/d_es;
+        U_cool_two_phase(i)=0.36*(conductivity_cool_two_phase_mean(i)/d_es)*((d_es*u0_cool_two_phase(i)*density_cool_two_phase_mean(i)/v_cool_two_phase_mean(i))^0.55)*(Pr_cool_two_phase(i)^(1/3))*1.05;
+    end
+    
+    Area_two_phase=0;
+    Q_trans_two_phase=m_heat*dh_heat_two_phase;
+    for i=1:n
+        K_two_phase(i)=1/((1/U_heat_two_phase(i))+(1/U_cool_two_phase(i))+k_wall);    %两相区各单元总传热系数
+        LMTD_two_phase(i)=((T_heat_two_phase(i+1)-T_cool_two_phase(i+1))-(T_heat_two_phase(i)-T_cool_two_phase(i)))/log((T_heat_two_phase(i+1)-T_cool_two_phase(i+1))/(T_heat_two_phase(i)-T_cool_two_phase(i)));
+        A_two_phase(i)=Q_trans_two_phase/(K_two_phase(i)*LMTD_two_phase(i));
+        Area_two_phase=Area_two_phase+A_two_phase(i);
+    end
+%————————以上为冷凝器两相区的面积——————————
+
+%以下计算过热蒸汽区有机工质侧
+    dh_heat_sup=(h_heat_in-h_heat_dew)/n;
+    h_heat_sup(1)=h_heat_dew;
+    T_heat_sup(1)=refpropm('T','P',P_heat,'H',h_heat_sup(1),fluid);
+    for i=1:n
+        h_heat_sup(i+1)=h_heat_sup(i)+dh_heat_sup;
+        T_heat_sup(i+1)=refpropm('T','P',P_heat,'H',h_heat_sup(i+1),fluid);
+        T_heat_sup_mean(i)=0.5*(T_heat_sup(i+1)+T_heat_sup(i));
+        density_heat_sup_mean(i)=refpropm('D','T',T_heat_sup_mean(i),'P',P_heat,fluid);%有机工质平均密度
+        v_heat_sup_mean(i)=refpropm('V','T',T_heat_sup_mean(i),'P',P_heat,fluid);  %有机工质平均粘度
+        conductivity_heat_sup_mean(i)=refpropm('L','T',T_heat_sup_mean(i),'P',P_heat,fluid); %有机工质平均导热系数
+        Cp_heat_sup_mean(i)=refpropm('C','T',T_heat_sup_mean(i),'P',P_heat,fluid);%有机工质平均比热容
+        Re_heat_sup(i)=diameter_in*G_heat/v_heat_sup_mean(i);       %雷诺数
+        Pr_heat_sup(i)=v_heat_sup_mean(i)*Cp_heat_sup_mean(i)/conductivity_heat_sup_mean(i); %普朗克数
+        f_heat_sup(i)=(0.790*log(Re_heat_sup(i))-1.64)^(-2); 
+        Nu_heat_sup(i)=(f_heat_sup(i)*Re_heat_sup(i)*Pr_heat_sup(i)/8)/(12.7*(f_heat_sup(i)/8)^0.5*((Pr_heat_sup(i))^(2/3)-1)+1.07); 
+        U_heat_sup(i)=conductivity_heat_sup_mean(i)*Nu_heat_sup(i)/diameter_in;       %管内工质换热系数
+    end
+%——————壳程冷却水侧————————————————
+    dh_cool_sup=(h_cool_out-h_cool_dew)/n;
+    h_cool_sup(1)=h_cool_dew;
+    T_cool_sup(1)=refpropm('T','P',P_cool,'H',h_cool_sup(1),'water');
+    for i=1:n
+        h_cool_sup(i+1)=h_cool_sup(i)+dh_cool_sup;
+        T_cool_sup(i+1)=refpropm('T','P',P_cool,'H',h_cool_sup(i+1),'water');
+        T_cool_sup_mean(i)=0.5*(T_cool_sup(i+1)+T_cool_sup(i));
+        density_cool_sup_mean(i)=refpropm('D','T',T_cool_sup_mean(i),'P',P_cool,'water'); %冷却水的平均密度
+        v_cool_sup_mean(i)=refpropm('V','T',T_cool_sup_mean(i),'P',P_cool,'water');    %冷却水的平均动力粘度
+        conductivity_cool_sup_mean(i)=refpropm('L','T',T_cool_sup_mean(i),'P',P_cool,'water'); %冷却水的平均导热系数
+        Cp_cool_sup_mean(i)=refpropm('C','T',T_cool_sup_mean(i),'P',P_cool,'water');    %冷却水的平均比热容
+    %Re_cool_sup(i)=d_es*G_cool/v_cool_sup_mean(i);       %雷诺数
+        Pr_cool_sup(i)=v_cool_sup_mean(i)*Cp_cool_sup_mean(i)/conductivity_cool_sup_mean(i);  %普朗克数
+        u0_cool_sup(i)=m_cool/density_cool_sup_mean(i)/As;
+    %f_cool_sup(i)=(0.790*log(Re_cool_sup(i))-1.64)^(-2);                %f为Dancy摩擦系数
+    %Nu_cool_sup(i)=(f_cool_sup(i)*Re_cool_sup(i)*Pr_cool_sup(i)/8)/(12.7*(f_cool_sup(i)/8)^0.5*((Pr_cool_sup(i))^(2/3)-1)+1.07); %努赛尔数
+    %U_cool_sup(i)=conductivity_cool_sup_mean(i)*Nu_cool_sup(i)/d_es;
+        U_cool_sup(i)=0.36*(conductivity_cool_sup_mean(i)/d_es)*((d_es*u0_cool_sup(i)*density_cool_sup_mean(i)/v_cool_sup_mean(i))^0.55)*(Pr_cool_sup(i)^(1/3))*1.05;
+    end
+%————计算过热区的换热面积——————
+    Area_sup=0;
+    Q_trans_sup=m_heat*dh_heat_sup;
+    for i=1:n 
+        K_sup(i)=1/((1/U_cool_sup(i))+(1/U_heat_sup(i))+k_wall);    %两相区各单元总传热系数
+        LMTD_sup(i)=((T_heat_sup(i+1)-T_cool_sup(i+1))-(T_heat_sup(i)-T_cool_sup(i)))/log((T_heat_sup(i+1)-T_cool_sup(i+1))/(T_heat_sup(i)-T_cool_sup(i)));
+        A_sup(i)=Q_trans_sup/(K_sup(i)*LMTD_sup(i));
+        Area_sup=Area_sup+A_sup(i);
+    end
+    
+    condenser1_result=Area_two_phase+Area_sup;
+
+% %如果汽轮机排气落在两相区，此时冷凝器里面只有两相区
+else 
+%——————对于有机工质侧————————————————
+%h_heat_out=refpropm('H','P',P_heat,'Q',0,fluid);
+    dh_heat_two_phase=(h_heat_in-h_heat_out)/n;
+
+    density_heat_liq=refpropm('D','P',P_heat,'Q',0,fluid);      %饱和液体密度
+    Cp_heat_liq=refpropm('C','P',P_heat,'Q',0,fluid);    %液态比热容[J/(kg K)]
+    v_heat_liq=refpropm('V','P',P_heat,'Q',0,fluid); %液态动力粘度[Pa*s]
+    conductivity_heat_liq=refpropm('L','P',P_heat,'Q',0,fluid); %液态导热率[W/(m K)]
+    Pr_heat_liq=v_heat_liq*Cp_heat_liq/conductivity_heat_liq;%有机工质饱和液体的普朗特数
+    Re_heat_liq=G_heat*diameter_in/v_heat_liq;
+
+    density_heat_vapor=refpropm('D','P',P_heat,'Q',Q_heat_in,fluid);    %进口气体密度
+    h_heat_two_phase(1)=h_heat_out;
+    Q_heat_two_phase(1)=refpropm('Q','P',P_heat,'H',h_heat_two_phase(1),fluid);
+    T_heat_two_phase(1)=refpropm('T','P',P_heat,'H',h_heat_two_phase(1),fluid);
+    
+    for i=1:n
+        h_heat_two_phase(i+1)=h_heat_two_phase(i)+dh_heat_two_phase;
+        Q_heat_two_phase(i+1)=refpropm('Q','P',P_heat,'H',h_heat_two_phase(i+1),fluid);
+        Q_heat_two_phase_mean(i)=0.5*(Q_heat_two_phase(i+1)+Q_heat_two_phase(i));
+        T_heat_two_phase(i+1)=refpropm('T','P',P_heat,'H',h_heat_two_phase(i+1),fluid);
+        x(i)=Q_heat_two_phase_mean(i);
+        v_heat_two_phase_mean(i)=refpropm('V','P',P_heat,'Q',Q_heat_two_phase_mean(i),fluid);     %每段平均粘度
+        density_heat_two_phase_mean(i)=refpropm('D','P',P_heat,'Q',Q_heat_two_phase_mean(i),fluid); %有机工质平均密度
+        conductivity_heat_two_phase_mean(i)=refpropm('L','P',P_heat,'Q',Q_heat_two_phase_mean(i),fluid); %有机工质平均导热系数
+        Cp_heat_two_phase_mean(i)=refpropm('C','P',P_heat,'Q',Q_heat_two_phase_mean(i),fluid);   %有机工质平均比热容
+    
+    %Pr_heat_two_phase(i)=v_heat_two_phase_mean(i)*Cp_heat_two_phase_mean(i)/conductivity_heat_two_phase_mean(i);%普朗克数
+        pr=P_heat/Pc;             %pr为实际压力比临界压力
+        U_heat_two_phase(i)=0.023*(Re_heat_liq^0.8)*(Pr_heat_liq^0.4)*(conductivity_heat_liq/d)*(((1-x(i))^0.8)+3.8*(x(i)^0.76)*((1-x(i))^0.04)/(pr^0.38));
+    end
+%对于壳程水侧
+    dh_cool_two_phase=(h_cool_out-h_cool_in)/n;
+    h_cool_two_phase(1)=h_cool_in;
+    T_cool_two_phase(1)=refpropm('T','P',P_cool,'H',h_cool_two_phase(1),'water');
+    d_es=1.10*P_t^2/diameter_out-diameter_out;     %壳程的当量直径
+%G_cool=m_cool/num_tube/A_tube;
+    As=lb*Di*(1-diameter_out/P_t); 
+    
+    for i=1:n
+        h_cool_two_phase(i+1)=h_cool_two_phase(i)+dh_cool_two_phase;
+        T_cool_two_phase(i+1)=refpropm('T','P',P_cool,'H',h_cool_two_phase(i+1),'water');
+        T_cool_two_phase_mean(i)=0.5*(T_cool_two_phase(i+1)+T_cool_two_phase(i));
+        density_cool_two_phase_mean(i)=refpropm('D','T',T_cool_two_phase_mean(i),'P',P_cool,'water'); %冷却水的平均密度
+        v_cool_two_phase_mean(i)=refpropm('V','T',T_cool_two_phase_mean(i),'P',P_cool,'water');    %冷却水的平均动力粘度
+        conductivity_cool_two_phase_mean(i)=refpropm('L','T',T_cool_two_phase_mean(i),'P',P_cool,'water'); %冷却水的平均导热系数
+        Cp_cool_two_phase_mean(i)=refpropm('C','T',T_cool_two_phase_mean(i),'P',P_cool,'water');    %冷却水的平均比热容
+        u0_cool_two_phase(i)=m_cool/density_cool_two_phase_mean(i)/As;
+    %Re_cool_two_phase(i)=d_es*G_cool/v_cool_two_phase_mean(i);       %雷诺数
+        Pr_cool_two_phase(i)=v_cool_two_phase_mean(i)*Cp_cool_two_phase_mean(i)/conductivity_cool_two_phase_mean(i);  %普朗克数
+    %f_cool_two_phase(i)=(0.790*log(Re_cool_two_phase(i))-1.64)^(-2);                %f为Dancy摩擦系数
+    %Nu_cool_two_phase(i)=(f_cool_two_phase(i)*Re_cool_two_phase(i)*Pr_cool_two_phase(i)/8)/(12.7*(f_cool_two_phase(i)/8)^0.5*((Pr_cool_two_phase(i))^(2/3)-1)+1.07); %努赛尔数
+    %U_cool_two_phase(i)=conductivity_cool_two_phase_mean(i)*Nu_cool_two_phase(i)/d_es;
+        U_cool_two_phase(i)=0.36*(conductivity_cool_two_phase_mean(i)/d_es)*((d_es*u0_cool_two_phase(i)*density_cool_two_phase_mean(i)/v_cool_two_phase_mean(i))^0.55)*(Pr_cool_two_phase(i)^(1/3))*1.05;
+    end
+    
+    Area_two_phase=0;
+    Q_trans_two_phase=m_heat*dh_heat_two_phase;
+    for i=1:n
+        K_two_phase(i)=1/((1/U_heat_two_phase(i))+(1/U_cool_two_phase(i))+k_wall);    %两相区各单元总传热系数
+        LMTD_two_phase(i)=((T_heat_two_phase(i+1)-T_cool_two_phase(i+1))-(T_heat_two_phase(i)-T_cool_two_phase(i)))/log((T_heat_two_phase(i+1)-T_cool_two_phase(i+1))/(T_heat_two_phase(i)-T_cool_two_phase(i)));
+        A_two_phase(i)=Q_trans_two_phase/(K_two_phase(i)*LMTD_two_phase(i));
+        Area_two_phase=Area_two_phase+A_two_phase(i);
+    end
+    
+    condenser1_result=Area_two_phase;
+end
+end
+

@@ -1,0 +1,82 @@
+%计算烟气与导热油之间换热器的面积,热源为内燃机尾气，导热油被加热
+%后缀为heat表示热源，后缀为cool表示被加热物质
+
+   
+function gasheater_result=A_gasheater(m_heat,m_cool,h_heat_in,h_heat_out,P_heat,P_cool,T_heat_in,T_heat_out,T_cool_in,T_cool_out)
+num_tube=245;
+diameter_in=0.025;%管子标准选25*2.5
+d=diameter_in;
+diameter_out=0.030;%管外径
+d_wall=0.0025;      %管壁厚度
+L_wall=49.8;   %管子用0.5%的碳钢，导热系数为L_wall
+Di=0.6;   %壳体的内径
+lb=0.45;  %折流版间距为450mm
+k_wall=d_wall/L_wall;   %管壁热阻
+P_t=0.032;  %换热管中心距
+pi=3.1415926;
+A_tube=0.25*pi*diameter_in^2;
+G_heat=m_heat/num_tube/A_tube;
+n=100;
+T_heat_m=(T_heat_in+T_heat_out)/2;
+
+mol_total=91/44+74/18+742/28+93/32;
+ mol_co2=(91/44)/mol_total;
+ mol_water=(74/18)/mol_total;    
+ mol_n2=(742/28)/mol_total;
+ mol_o2=(93/32)/mol_total;
+
+density_heat_mean=refpropm('D','T',T_heat_m,'P',P_heat,'CO2','WATER','NITROGEN','OXYGEN',[0.091,0.074,0.742,0.093]);%尾气的平均密度
+    v_heat_mean_CO2=refpropm('V','T',T_heat_m,'P',P_heat,'CO2');
+    v_heat_mean_water=refpropm('V','T',T_heat_m,'P',P_heat,'WATER');
+    v_heat_mean_nitrogen=refpropm('V','T',T_heat_m,'P',P_heat,'NITROGEN');
+    v_heat_mean_oxygen=refpropm('V','T',T_heat_m,'P',P_heat,'OXYGEN');
+    v_heat_mean=v_heat_mean_CO2*mol_co2+v_heat_mean_water*mol_water+v_heat_mean_nitrogen*mol_n2+v_heat_mean_oxygen*mol_o2;
+    %v_heat_mean=refpropm('V','T',T_heat_m,'P',P_heat,'CO2','WATER','NITROGEN','OXYGEN',[0.091,0.074,0.742,0.093]);  %尾气的平均粘度
+    conductivity_heat_mean_CO2=refpropm('L','T',T_heat_m,'P',P_heat,'CO2');
+    conductivity_heat_mean_water=refpropm('L','T',T_heat_m,'P',P_heat,'WATER');
+    conductivity_heat_mean_nitrogen=refpropm('L','T',T_heat_m,'P',P_heat,'NITROGEN');
+    conductivity_heat_mean_oxygen=refpropm('L','T',T_heat_m,'P',P_heat,'OXYGEN');
+    conductivity_heat_mean=conductivity_heat_mean_CO2*mol_co2+conductivity_heat_mean_water+conductivity_heat_mean_nitrogen*mol_n2+conductivity_heat_mean_oxygen*mol_o2;
+    %conductivity_heat_mean=refpropm('L','T',T_heat_m,'P',P_heat,'CO2','WATER','NITROGEN','OXYGEN',[0.091,0.074,0.742,0.093]); %尾气的平均导热系数
+    
+    Cp_heat_mean=refpropm('C','T',T_heat_m,'P',P_heat,'CO2','WATER','NITROGEN','OXYGEN',[0.091,0.074,0.742,0.093]);%尾气的平均比热容
+    Re_heat_m=diameter_in*G_heat/v_heat_mean;       %雷诺数
+    Pr_heat_m=v_heat_mean*Cp_heat_mean/conductivity_heat_mean; %普朗克常数
+    f_heat_m=(0.790*log(Re_heat_m)-1.64)^(-2);
+    
+    if Re_heat_m<10000
+         
+        Nu_heat_m=(f_heat_m*Re_heat_m*Pr_heat_m/8)/(12.7*(f_heat_m/8)^0.5*((Pr_heat_m)^(2/3)-1)+1.07); %努赛尔数
+        U_heat_m=conductivity_heat_mean*Nu_heat_m/diameter_in;
+    else 
+        
+        Nu_heat_m=(f_heat_m*(Re_heat_m-1000)*Pr_heat_m/8)/(12.7*(f_heat_m/8)^0.5*((Pr_heat_m)^(2/3)-1)+1.07);
+        U_heat_m=conductivity_heat_mean*Nu_heat_m/diameter_in;
+    end
+    %——————以上计算管内气体传热系数，下面计算壳程CO2传热系数——————————
+    
+    T_cool_m=(T_cool_in+T_cool_out)/2;
+    d_es=1.10*P_t^2/diameter_out-diameter_out; 
+    As=lb*Di*(1-diameter_out/P_t); 
+ 
+ 
+    density_cool_mean=refpropm('D','T',T_cool_m,'P',P_cool,'CO2'); %导热油平均密度kg/m3
+    v_cool_mean=refpropm('V','T',T_cool_m,'P',P_cool,'CO2');       %导热油平均粘度Pa*s
+    conductivity_cool_mean=refpropm('L','T',T_cool_m,'P',P_cool,'CO2'); %导热油平均导热系数W/(m K)
+    Cp_cool_mean=refpropm('C','T',T_cool_m,'P',P_cool,'CO2'); %导热油平均比热容W/(m K)
+    u0_cool_m=m_cool/density_cool_mean/As;
+    %Re_heat_sup(i)=d_es*G_heat/v_heat_sup_mean(i);       %雷诺数
+    Pr_cool_m=v_cool_mean*Cp_cool_mean/conductivity_cool_mean;  %普朗克数
+    %f_heat_sup(i)=(0.790*log(Re_heat_sup(i))-1.64)^(-2);                %f为Dancy摩擦系数
+    %Nu_heat_sup(i)=(f_heat_sup(i)*Re_heat_sup(i)*Pr_heat_sup(i)/8)/(12.7*(f_heat_sup(i)/8)^0.5*((Pr_heat_sup(i))^(2/3)-1)+1.07); %努赛尔数
+    %U_heat_sup(i)=conductivity_heat_sup_mean(i)*Nu_heat_sup(i)/d_es;
+     U_cool_m=0.36*(conductivity_cool_mean/d_es)*((d_es*u0_cool_m*density_cool_mean/v_cool_mean)^0.55)*(Pr_cool_m^(1/3))*1.05;
+
+ %计算总传热系数及面积
+   Q_trans=m_heat*(h_heat_in-h_heat_out);
+   K_m=1/((1/U_cool_m)+(1/U_heat_m)+k_wall);    %两相区各单元总传热系数
+   LMTD=((T_heat_in-T_cool_out)-(T_heat_out-T_cool_in))/log((T_heat_in-T_cool_out)/(T_heat_out-T_cool_in));
+   Area=Q_trans/(K_m*LMTD);
+   
+gasheater_result=Area;
+end   

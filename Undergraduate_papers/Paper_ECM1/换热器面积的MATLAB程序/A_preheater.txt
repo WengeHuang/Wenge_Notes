@@ -1,0 +1,148 @@
+%有机郎肯循环蒸发面积计算（管壳式换热器，热源：CO2；被加热：有机工质）
+%后缀heat表示热源，cool表示被加热工质
+function preheater_result=A_preheater(fluid1,fluid2,m_cool,m_heat,h_cool_in,h_cool_out,h_heat_in,h_heat_out,T_cool_in,T_cool_out,T_heat_in,T_heat_out,P_cool,P_heat)
+
+num_tube=245;
+diameter_in=0.025;%管子标准选25*2.5
+d=diameter_in;
+diameter_out=0.030;
+d_wall=0.0025;      %管壁厚度
+Di=0.6;   %壳体的内径
+lb=0.45;  %折流版间距为450mm
+L_wall=49.8;   %管子用0.5%的碳钢，导热系数为L_wall
+k_wall=d_wall/L_wall;   %管壁热阻
+P_t=0.032;  %换热管中心距
+%-------------先假设一个管长l--------------------
+l_1=4;         %假设管长为4m
+l_2=6;
+flag=0;
+while abs(l_2/l_1)>1.05||abs(l_2/l_1)<0.95
+
+    l_1=0.5*(l_1+l_2);
+pi=3.1415926;
+A_tube=0.25*pi*diameter_in^2;
+%=======对于两相区,预热器出口为两相区====================
+n=100;
+T_cool_bubble=refpropm('T','P',P_cool,'Q',0,fluid1);
+h_cool_bubble=refpropm('H','P',P_cool,'Q',0,fluid1);
+T_cool_dew=refpropm('T','P',P_cool,'Q',1,fluid1);
+h_cool_dew=refpropm('H','P',P_cool,'Q',1,fluid1);
+
+density_cool_liq=refpropm('D','P',P_cool,'Q',0,fluid1);%液态密度[kg/m3]
+Cp_cool_liq=refpropm('C','P',P_cool,'Q',0,fluid1);    %液态比热容[J/(kg K)]
+v_cool_liq=refpropm('V','P',P_cool,'Q',0,fluid1); %液态动力粘度[Pa*s]
+conductivity_cool_liq=refpropm('L','P',P_cool,'Q',0,fluid1); %液态导热率[W/(m K)]
+
+density_cool_vap=refpropm('D','P',P_cool,'Q',1,fluid1);%气态密度[kg/m3]
+v_cool_vap=refpropm('V','P',P_cool,'Q',1,fluid1);%气态动力粘度[Pa*s]
+
+dh_cool_two_phase=(h_cool_out-h_cool_bubble)/n;
+r_cool=h_cool_dew-h_cool_bubble; %有机工质汽化潜热
+%分成每一小段
+  h_cool_two_phase(1)=h_cool_bubble;
+  T_cool_two_phase(1)=refpropm('T','P',P_cool,'H',h_cool_two_phase(1),fluid1);
+  Q_cool_two_phase(1)=refpropm('Q','P',P_cool,'H',h_cool_two_phase(1),fluid1);
+  G_cool=m_cool/num_tube/A_tube;      %管道里面质量流量
+  q_cool_two_phase=G_cool*dh_cool_two_phase/(pi*0.5*(diameter_in+diameter_out)*(l_1/n));%平均管子里面平均热流密度
+  Bo=q_cool_two_phase/(G_cool*r_cool);%沸腾数
+  
+  Re_cool_liq=G_cool*diameter_in/v_cool_liq;
+  Pr_cool_liq=Cp_cool_liq*v_cool_liq/conductivity_cool_liq;
+  
+  
+  for i=1:n;
+  h_cool_two_phase(i+1)=h_cool_two_phase(i)+dh_cool_two_phase;
+  T_cool_two_phase(i+1)=refpropm('T','P',P_cool,'H',h_cool_two_phase(i+1),fluid1);
+  Q_cool_two_phase(i+1)=refpropm('Q','P',P_cool,'H',h_cool_two_phase(i+1),fluid1);%干度
+  Q_cool_two_phase_mean(i)=0.5*(Q_cool_two_phase(i)+Q_cool_two_phase(i+1));%每段的平均干度
+  x(i)=Q_cool_two_phase_mean(i);
+  
+  U_cool_two_phase(i)=0.023*(conductivity_cool_liq/d)*((G_cool*(1-x(i))*d/v_cool_liq)^0.8)*((Pr_cool_liq)^0.4)*(1+3000*(Bo)^0.86+1.12*((x(i)/(1-x(i))^0.75))*((density_cool_liq/density_cool_vap)^0.41));
+end
+  %------------------以上为工质两相区，下面计算热源两相区------------------
+
+  %缸套水为液态，走壳程
+h_heat_bubble=h_heat_in-m_cool*(h_cool_out-h_cool_bubble)/m_heat; %当工质处于露点时缸套水的焓值
+
+dh_heat_two_phase=(h_heat_in-h_heat_bubble)/n;  
+
+h_heat_two_phase(1)=h_heat_bubble;
+T_heat_bubble=refpropm('T','P',P_heat,'H',h_heat_bubble,fluid2);
+T_heat_two_phase(1)=T_heat_bubble;
+
+d_es=1.10*P_t^2/diameter_out-diameter_out;     %壳程的当量直径
+As=lb*Di*(1-diameter_out/P_t);              %As为流体流过管间的最大面积
+
+%A_shell=0.25*pi*d_es^2;                   还不能用当量直径算，只针对特定的公式才能用
+%G_heat=m_heat/num_tube/A_shell;            %导热油的质量速度 kg/m2*s
+
+for i=1:n;
+    h_heat_two_phase(i+1)=h_heat_two_phase(i)+dh_heat_two_phase;
+    
+    T_heat_two_phase(i+1)=refpropm('T','P',P_heat,'H',h_heat_two_phase(i+1),fluid2);
+    T_heat_two_phase_mean(i)=0.5*(T_heat_two_phase(i)+T_heat_two_phase(i+1));
+    T_water=T_heat_two_phase_mean(i);
+    density_heat_two_phase_mean(i)=refpropm('D','T',T_water,'P',P_heat,fluid2); %缸套水平均密度kg/m3
+    v_heat_two_phase_mean(i)=refpropm('V','T',T_water,'P',P_heat,fluid2);       %缸套水平均粘度Pa*s
+    conductivity_heat_two_phase_mean(i)=refpropm('L','T',T_water,'P',P_heat,fluid2); %缸套水平均导热系数J/(kg K)
+    Cp_heat_two_phase_mean(i)=refpropm('C','T',T_water,'P',P_heat,fluid2); %缸套水平均比热容W/(m K)
+    u0_heat_two_phase(i)=m_heat/density_heat_two_phase_mean(i)/As;
+    Pr_heat_two_phase(i)=v_heat_two_phase_mean(i)*Cp_heat_two_phase_mean(i)/conductivity_heat_two_phase_mean(i);  %普朗克数
+    U_heat_two_phase(i)=0.36*(conductivity_heat_two_phase_mean(i)/d_es)*((d_es*u0_heat_two_phase(i)*density_heat_two_phase_mean(i)/v_heat_two_phase_mean(i))^0.55)*(Pr_heat_two_phase(i)^(1/3))*0.95;
+end
+%计算两相区总传热系数及面积
+Area_two_phase=0;
+Q_trans_two_phase=m_cool*dh_cool_two_phase;
+for i=1:n 
+   K_two_phase(i)=1/((1/U_cool_two_phase(i))+(1/U_heat_two_phase(i))+k_wall);    %两相区各单元总传热系数
+   LMTD_two_phase(i)=(T_heat_two_phase(i+1)-T_cool_two_phase(i+1))-(T_heat_two_phase(i)-T_cool_two_phase(i))/log((T_heat_two_phase(i+1)-T_cool_two_phase(i+1))/(T_heat_two_phase(i)-T_cool_two_phase(i)));
+   A_two_phase(i)=Q_trans_two_phase/(K_two_phase(i)*LMTD_two_phase(i));
+   Area_two_phase=Area_two_phase+A_two_phase(i);
+end
+%------以上为蒸发器两相区的面积------
+
+%——对于过冷区，工质侧-----------------------------------
+
+T_cool_sub_mean=(T_cool_bubble+T_cool_in)/2;
+density_cool_sub_mean=refpropm('D','T',T_cool_sub_mean,'P',P_cool,fluid1);%有机工质平均密度
+v_cool_sub_mean=refpropm('V','T',T_cool_sub_mean,'P',P_cool,fluid1);  %有机工质平均粘度
+conductivity_cool_sub_mean=refpropm('L','T',T_cool_sub_mean,'P',P_cool,fluid1); 
+Cp_cool_sub_mean=refpropm('C','T',T_cool_sub_mean,'P',P_cool,fluid1);
+Re_cool_sub=diameter_in*G_cool/v_cool_sub_mean;       %雷诺数
+Pr_cool_sub=v_cool_sub_mean*Cp_cool_sub_mean/conductivity_cool_sub_mean; %普朗克数
+f_cool_sub=(0.790*log(Re_cool_sub)-1.64)^(-2); 
+Nu_cool_sub=(f_cool_sub*Re_cool_sub*Pr_cool_sub/8)/(12.7*(f_cool_sub/8)^0.5*((Pr_cool_sub)^(2/3)-1)+1.07); 
+U_cool_sub=conductivity_cool_sub_mean*Nu_cool_sub/diameter_in;       %管内工质换热系数
+
+
+%__过冷区缸套水侧
+
+T_heat_sub_mean=(T_heat_bubble+T_heat_out)/2;
+
+    density_heat_sub_mean=refpropm('D','T',T_heat_sub_mean,'P',P_heat,fluid2); %CO2平均密度kg/m3
+    v_heat_sub_mean=refpropm('V','T',T_heat_sub_mean,'P',P_heat,fluid2);       %CO2平均粘度Pa*s
+    conductivity_heat_sub_mean=refpropm('L','T',T_heat_sub_mean,'P',P_heat,fluid2); %CO2平均导热系数W/(m K)
+    Cp_heat_sub_mean=refpropm('C','T',T_heat_sub_mean,'P',P_heat,fluid2); %CO2平均比热容W/(m K)
+    u0_heat_sub=m_heat/density_heat_sub_mean/As;
+    Pr_heat_sub=v_heat_sub_mean*Cp_heat_sub_mean/conductivity_heat_sub_mean;  %普朗克数
+    U_heat_sub=0.36*(conductivity_heat_sub_mean/d_es)*((d_es*u0_heat_sub*density_heat_sub_mean/v_heat_sub_mean)^0.55)*(Pr_heat_sub^(1/3))*0.95;
+    Q_trans_sub=m_cool*(h_cool_bubble-h_cool_in);
+    K_sub=1/((1/U_cool_sub)+(1/U_heat_sub)+k_wall);    %两相区各单元总传热系数
+    LMTD_sub=((T_heat_bubble-T_cool_bubble)-(T_heat_out-T_cool_in))/log((T_heat_bubble-T_cool_bubble)/(T_heat_out-T_cool_in));
+    A_sub=Q_trans_sub/(K_sub*LMTD_sub);
+    
+
+ 
+%蒸发器面积
+A_evap=Area_two_phase+A_sub;
+l_2=A_evap/(pi*diameter_out*num_tube);
+flag=flag+1;
+if flag>100
+    %A_evap=0;
+    break;
+end
+end
+
+l=l_2;         %管长为l
+preheater_result=A_evap;    %最终的蒸发器的面积
+end
