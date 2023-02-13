@@ -1,0 +1,129 @@
+% This is a template for doing homework assignments in LaTeX
+
+\documentclass{article} % This command is used to set the type of document you are working on such as an article, book, or presenation
+
+\usepackage{geometry} % This package allows the editing of the page layout
+\usepackage{amsmath}  % This package allows the use of a large range of mathematical formula, commands, and symbols
+\usepackage{graphicx}  % This package allows the importing of images
+\usepackage{mathtools}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\newcommand{\question}[2][]{\begin{flushleft}
+        \textbf{Question #1}: {#2}
+
+\end{flushleft}}
+\newcommand{\sol}{\textbf{Solution}:} %Use if you want a boldface solution line
+\newcommand{\maketitletwo}[2][]{\begin{center}
+        \Large{\textbf{Assignment #1}       
+        \vspace{5pt}
+            } % Name of course here
+        \vspace{5pt}
+        
+        \normalsize{Wenge Huang  % Your name here
+        
+        \today}        % Change to due date if preferred
+        \vspace{15pt}
+        
+\end{center}}
+\begin{document}
+    \maketitletwo[1]  % Optional argument is assignment number
+    %Keep a blank space between maketitletwo and \question[1]
+    
+    \question[1]{Find the Fourier sine expansion of the following function
+    \begin{equation}
+    f(x) = x^{2},  x\in [0, 1]
+    \end{equation}
+    } 
+    $Solution$: We assume $$f(x) = \sum_{n=1}^{\infty} B_{n} \sin (n\pi x) = x^{2}$$\par
+    The coefficient of $\sin(n\pi x)$ in Fourier sine series is:
+    \begin{align*}
+B_{n} &= 2\int_{0}^{1} x^{2} \sin(n \pi x)dx \\
+                 &= \frac{2(-1)^{n-1}}{n\pi}+\frac{4}{(n\pi)^{3}}((-1)^{n}-1)
+    \end{align*}\par
+    Therefore, the Fourier sine expansion of the given function is
+    $$
+    x^{2} = \sum_{n=1}^{\infty}\left[ \frac{2(-1)^{n-1}}{n\pi}+\frac{4}{(n\pi)^{3}}((-1)^{n}-1)\right]\sin(n\pi x), x\in [0,1]
+    $$
+    
+    
+    
+    
+    \question[2]{Consider the following IBVP (initial boundary value problem) for the 1D heat equation posed on the initerval [0, L] for some L > 0:}
+\begin{equation}
+\left \{ \begin{array}{llc}
+\frac{\partial u(x, t)}{\partial t} =\frac{\partial^{2}u (x,t)}{\partial x^{2}} & x \in (0,L),  t>0 \\
+\\
+u_{x}(0,t) = 0, u_{x}(L, t) = 0& t>0 \\
+\\
+u(x, 0) = x & 0 \leq x \leq L
+\end{array}\right.
+\end{equation}\par
+$Solution$: We assume the solution is of form:
+$$
+u(x, t) = V(x)T(t)
+$$
+Then the equation is 
+$$
+T'(t)/T(t) = V''(x)/V(x) = \beta
+$$
+where $\beta$ is a constant. We solve $V$ by eignefunctions.\\
+(a) If $\beta > 0$, 
+$$
+V(x) = c_{1}e^{-\sqrt{\beta}x}+c_{2}e^{\sqrt{\beta}x}
+$$
+$$
+V'(x) = -\sqrt{\beta}c_{1}e^{-\sqrt{\beta}x}+\sqrt{\beta}c_{2}e^{\sqrt{\beta}x}
+$$\par
+By $V'(0) = V'(L) =0$, we have $c_{1} = c_{2} =0$. There is no non-trivial solutions.\\
+(b)If $\beta =0$
+$$
+V(x) =c_{1} +c_{2}x 
+$$
+$$
+V'(x) =c_{2}
+$$
+\par
+By $V'(0) = V'(L) =0$, we have $c_{2} = 0$. The eigenfunction is $V_{0}(x) = 1$.\\
+(c)
+If $\beta <0$
+$$
+V(x) = c_{1}\cos(\sqrt{-\beta}x)+c_{2}\sin(\sqrt{-\beta}x)
+$$    
+$$
+V'(x)=-c_{1}\sqrt{-\beta}\sin(\sqrt{-\beta}x)+c_{2}\sqrt{-\beta}\cos(\sqrt{-\beta}x)
+$$\par
+By $V'(0) = V'(L) =0$, we have $c_{2} = 0$, $\beta_{n} = -\left(\frac{n\pi}{L}\right)^{2}$, $n \in N$. The eigenfunction $V_{n} = \cos(\frac{n\pi}{L}x)$, $n \in N$. The corresponding $T_{n}(t) = e^{\beta_{n}t}= e^{ -\left(\frac{n\pi}{L}\right)^{2}t}$.\par
+The solution can be written as:
+$$
+u(x, t) = c_{0} + \sum_{n=1}^{\infty}c_{n}V_{n}(x)T_{n}(t)=c_{0} + \sum_{n=1}^{\infty}c_{n}e^{ -\left(\frac{n\pi}{L}\right)^{2}t}\cos(\frac{n\pi}{L}x)
+$$\par
+The boundary value
+$$
+x =u(x, 0) = c_{0} + \sum_{n=1}^{\infty}c_{n}\cos(\frac{n\pi}{L}x)
+$$
+is exactly the Fourier cosine expansion of $x$ on $[0, L]$, thus
+$$
+c_{0}= \frac{1}{L}\int_{0}^{L}xdx=\frac{L}{2}
+$$
+$$
+c_{n} = \frac{2}{L}\int_{0}^{L}x\cos(\frac{n\pi}{L}x)dx, n\in N
+$$
+Therefore, for $t>0$, $x \in [0, L]$,
+$$
+u(x, t) = \frac{L}{2}+\sum_{n=1}^{\infty}\left(\frac{2}{L}\int_{0}^{L}x\cos(\frac{n\pi}{L}x)dx \right)e^{ -\left(\frac{n\pi}{L}\right)^{2}t}\cos(\frac{n\pi}{L}x)
+$$
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
