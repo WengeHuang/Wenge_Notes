@@ -54,6 +54,7 @@
 \usepackage{derivative}
 \usepackage{mathtools}
 
+\usepackage{amsfonts}
 %%% The "real" document content comes below...
 
 \title{Notes for Applied PDEs}
@@ -282,8 +283,8 @@ u(x, t) = \sum_{n=1}^{\infty}\frac{2}{L}\int_{0}^{L}f(x')sin(\frac{n\pi}{L}x')dx
 \hspace{5mm}Now we are trying to solve the heat equation with the source term:
 \begin{equation}
 \left \{ \begin{array}{llc}
-\pdv{u}{t} =\frac{\partial^{2}u}{\partial x^{2}} + g(x, t)& x \in (0,L),  t>0 \\
-u(0,t) = 0, u(L, t) = 0& t>0 \\
+\pdv{u}{t} =\frac{\partial^{2}u}{\partial x^{2}} + g(x, t)& x \in (0,L),  t>0 \\ \\
+u(0,t) = 0, u(L, t) = 0& t>0 \\ \\
 u(x, 0) = f(x) & 0 \leq x \leq L
 \end{array}\right.
 \end{equation}\par
@@ -384,6 +385,7 @@ u(x, t) = \sum_{n = 1}^{\infty} \frac{2}{L}\int_{0}^{L}f(x')sin(\frac{n\pi}{L}x'
 \right]
 \end{multlined}
 \end{equation}
+
 
 
 
@@ -521,7 +523,7 @@ u_{t} = u_{xx} + u_{yy} & 0<x<1, 0<y<1, t>0\\
   u(x, 0, t)=0,  u(x, 1, t)=0 & t >0 \\ \\
  u(x, y, 0) = f(x, y)
 \end{array}\right.
-\end{equation}we have one Neumann b.c. here.
+\end{equation}note that we have a Neumann boundary condition.
 \par
 we also do the separation of variable:
 $$
@@ -547,148 +549,453 @@ X''(x) = \mu X(x)\\
 Y''(y) = (\beta - \mu)Y(y)
 \end{array}\right.
 \end{equation}\par
-Applying the boundary conditions, we can find:
+Consider the boundary conditions:
 $$
-u(0, y, t) = 0 \Rightarrow  X(0) =0
+u(0, y, t)=0 \Rightarrow X(0)=0
 $$
-$$
-u_{x}(1, y, t) = 0 \Rightarrow X'(1) = 0
-$$
-$$
-u(x, 0, t) = 0 \Rightarrow Y(0) = 0
+$$u_{x}(1, y, t) \Rightarrow X'(1) = 0
 $$
 $$
-u(x, 1, t) = 0 \Rightarrow Y(1) = 0
+u(x, 0, t)=0 \Rightarrow Y(0) = 0
 $$
-Thus we have the ODEs:
-\begin{equation}
+$$
+u(x, 1, t)=0 \Rightarrow Y(1) = 0
+$$\par
+We end up with two eigenvalue problems.
+$$
 \left\{
 \begin{array}{lll}
-X''(x) = \mu X(x) & 0<x<1\\
-X(0) = 0, X'(1) =0 
-\end{array}
-\right.
-\end{equation}
-For this ODE, we have the different eignevalues and eigenfunctions from the past heat equation:
-\begin{equation}
-\mu_{n}= -(n\pi - \frac{\pi}{2})^{2}
-\end{equation}
-\begin{equation}
-X_{n}(x) = \sin[(n\pi- \frac{\pi}{2})x], n\in N
-\end{equation}\par
-Then for each $\mu = \mu_{n}$, we have:
-\begin{equation}
+X''(x) = \mu X(x)\\
+X(0)=0, X'(1)=0
+\end{array}\right.
+$$
+$$
 \left\{
 \begin{array}{lll}
-Y''(y) = (\beta-\mu_{n}) Y(y) & 0<y<1\\
-Y(0) = 0, Y(1) =0 
-\end{array}
-\right.
-\end{equation}\par
-The eigenvalues and the eigenfucntions are:
+Y''(y) = (\beta - \mu)Y(y)\\
+Y(0)=0, Y(1)=0
+\end{array}\right.
+$$\par
+Then we have the eigenvalue and eigenfunction as such:
 $$
-\beta -\mu_{n} = -(m\pi)^{2}
+\mu_{n} = -(n\pi -\frac{\pi}{2})^{2}
+$$
+$$
+X_{n}(x) = \sin((n\pi - \frac{\pi}{2})x), n \in N
+$$then for each $\mu = \mu_{n}$, we have:
+$$
+\left\{
+\begin{array}{lll}
+Y''(y) = (\beta -\mu_{n})Y(y)\\
+Y(0)=Y(1)=0
+\end{array}\right.
+$$\par
+The eigenvalue and eigenfunctions are:
+$$
+\beta - \mu_{n} = -(m\pi)^{2}
 $$
 $$
 Y_{m}(y) = \sin(m\pi y), m \in N
 $$
-Note that $\beta$ depends on two indices $m$ \& $n$(which are independent with each other)
+note that $\beta$ depends on two indices $m$ \& $n$:
 $$
-\beta_{m, n} = -(n\pi- \frac{\pi}{2}) - (m\pi)^{2}
+\beta_{m, n} =  -(n\pi -\frac{\pi}{2})^{2} -(m\pi)^{2}
 $$\par
-Now back to Eq(28) we get the
+Now back to Eq(28), we have the time term:
 $$
-\frac{T'(t)}{T(t)}= \beta
-$$
-$$
-T'_{m, n}(t) = -[(n\pi- \frac{\pi}{2})+ (m\pi)^{2}]T_{m, n}(t)
+T'_{m,n}(t) =  -[(n\pi -\frac{\pi}{2})^{2} +(m\pi)^{2}]T_{m,n}(t)
 $$
 \begin{equation}
-T_{m, n}(t) = C_{m, n}e^{ -[(n\pi- \frac{\pi}{2})+ (m\pi)^{2}]t}
+T_{m,n}(t) = C_{m,n}e^{\beta_{m,n}t}=C_{m,n}e^{\ -[(n\pi -\frac{\pi}{2})^{2} +(m\pi)^{2}]t}
 \end{equation}\par
-For the BVP we have the solution:
-\begin{equation}
-u(x, y, t) = \sum_{m=1}^{\infty}\sum_{n=1}^{\infty} C_{m, n}e^{ -[(n\pi- \frac{\pi}{2})+ (m\pi)^{2}]t}\sin[(n\pi- \frac{\pi}{2})x] \sin(m\pi y)
-\end{equation}\par
-Using the orthogonal property to determine $C_{m, n}$
+Now for the BVP we have:
 $$
-\int_{0}^{1}\int_{0}^{1}f(x, y)X_{p}(x)Y_{q}(y)dxdy =
-\sum_{m, n=1}^{\infty}\int_{0}^{1}\int_{0}^{1}C_{m, n}X_{n}(x)X_{p}(x)Y_{m}(y)Y_{q}(y)dxdy
-$$
-Recall that 
-$$
-\int_{0}^{1}X_{n}(x)X_{p}(x)dx =\left\{
-\begin{array}{lll}
-0 &n\neq p \\
-\frac{1}{2} & n=p
-\end{array}\right.
+u(x, y, t) = \sum_{m,n = 1}^{\infty}C_{m,n}e^{\ -[(n\pi -\frac{\pi}{2})^{2} +(m\pi)^{2}]t} \sin((n\pi - \frac{\pi}{2})x)\sin(m\pi y)
 $$\par
-Thus, we can find that
+At time $t=0$, we have the initial condition
+$$u(x, y, 0) = f(x, y) = \sum_{m,n = 1}^{\infty}C_{m,n}\sin((n\pi - \frac{\pi}{2})x)\sin(m\pi y)
+$$\par
+To determine $C_{m,n}$ we it by $X_{p}(x)Y_{q}(y)$ for the orthogonality and integrate it:
 $$
-C_{p, q} = 4 \int_{0}^{1}\int_{0}^{1}f(x, y)X_{p}(x)Y_{q}(y)dxdy
+\int_{0}^{1}\int_{0}^{1}f(x, y)X_{p}(x)Y_{q}(y)dxdy =  \sum_{m,n = 1}^{\infty}C_{m,n}X_{n}(x)X_{p}(x)Y_{m}(y)Y_{q}(y)dxdy = \frac{1}{4}C_{p, q}
 $$
+Thus we have:
+$$
+C_{p, q} = 4\int_{0}^{1}\int_{0}^{1}f(x, y)X_{p}(x)Y_{q}(y)dxdy
+$$
+
 
 
 
 \subsection{Laplace equation}
-\hspace{5mm} In the section we do the separation of variable for the Laplace equation. Consider the following BVP:
+\hspace{5mm}
+Now let's consider the following equation:
 \begin{equation}
 \left\{
 \begin{array}{lll}
-u_{xx}+u_{yy} = 0& 0<x<1, 0<y<1 \\
+u_{xx} + u_{yy} = 0 & 0<x<1, 0<y<1, t>0\\
  \\
-u(x, 0) =0, u(x, 1) =x-x^{2}& 0\leq x\leq1\\
- \\
-u(0, y) =0, u(1, y) =0& 0\leq y\leq1\\
-\end{array}
-\right.
-\end{equation}Note that we no longer have the initial condition since there is no ''time'' dependence.\par
-The solutions to Laplace equation $\nabla u=0$ are the steady state solutions to the heat equation. we have $u(x,y)=X(x)Y(y)$:
+ u(x, 0)=0,  u(x, 1)=x - x^{2} & 0 \leq x \leq 1\\ \\
+  u(0,y)=0,  u(1, y)=0 &  0 \leq y \leq 1
+\end{array}\right.
+\end{equation}\par
+Note that we no longer have the initial conditions, since there is no ''time'' dependence. The solutions to the Laplace equation $\Delta u = 0$ are the steady-state solutions to the heat equation. \par
+Assuming that $u(x, y) = X(x)Y(y)$, we'll have:
 $$
-X''(x)Y(y) +X(x)Y''(y) = 0
+X''(x)Y(y)+X(x)Y''(y) =0
 $$
 $$
-\frac{X''(x)}{X(x)} = -\frac{Y''(x)}{Y(x)}=\beta
+ \frac{X''(x)}{X(x)}+\frac{Y''(y)}{Y(y)} =0
+$$
+$$
+ \frac{X''(x)}{X(x)}=-\frac{Y''(y)}{Y(y)}=\beta
 $$\par
-With the boundary condition $u(0, y) =0, u(1, y) =0$, we have the ODE for $x$:
 $$
 \left\{
 \begin{array}{lll}
-X''(x) = \beta X(x) & 0<x<1\\
-X(0) = 0, X(1) =0 
+X''(x) = \beta X(x)\\
+Y''(y) = -\beta Y(y)
+\end{array}\right.
+$$
+Note that we have three homogeneous boundary conditions:
+$$
+\begin{array}{lll}
+u(x, 0) = 0 \Rightarrow Y(0) = 0\\
+u(0, y) = 0 \Rightarrow X(0) = 0\\
+u(1, y) = 0 \Rightarrow X(1) = 0\\
+u(x, 1) = x-x^{2} 
 \end{array}
-\right.
-$$
-This is what we have solved before with the eigenvalues and eigenfunctions:
-$$
-\beta_{n}= -(n\pi)^{2}
-$$
-$$
-X_{n}(x) = \sin(n\pi x), n\in N
 $$\par
-Also, we have the functions for $Y(y)$:
+From above, we get:
 $$
-Y''(x) =(n\pi)^{2} Y(x)
-$$ we can find that 
+\left\{
+\begin{array}{lll}
+X''(x) = \beta X(x)\\
+X(0)=0, X(1)=0
+\end{array}\right.
+$$ with the eigenvalue and eigenfunction
 $$
-Y_{n}(y) = C_{1}e^{n\pi y}+C_{2}e^{-n\pi y}
-$$with one boundary condition that $Y(0) = 0$
+\beta_{n} = -(n\pi)^{2}
+$$
+$$
+X_{n}(x) = \sin(n\pi x), n \in N
+$$\par
+For the $y$ variable:
+$$
+Y''(y) = (n\pi)^{2}Y(y)
+$$The eigenfunction is:
+$$
+Y_{n}(y)=C_{1}e^{n\pi y} +C_{2}e^{-n\pi y}
+$$Using the third boundary condition $Y(0) = 0$, we have $C_{1}+C_{2}$:
+$$
+Y_{n}(y)= C_{1}(e^{n\pi y}-e^{-n\pi y})=2C_{1}\sinh(n\pi y)
+$$\par
+Now with three homogeneous boundary conditions, we have the solution:
+$$
+u_{n}(x, y) = \sum_{n = 1}^{\infty} C_{n}\sin(n\pi x)\sinh(n\pi y), n \in N
+$$\par
+Now we need  to choose $C_{n}$ to statisfy the remaining boundary condition $u(x, 1) = x-x^{2}$.
+$$
+ \sum_{n = 1}^{\infty} C_{n}\sin(n\pi x)\sinh(n\pi y) = x-x^{2}
+$$multiply both side by $\sin(n\pi x)$ and integrate.\par
+$$
+\frac{1}{2}C_{n}\sinh(n\pi) = \int_{0}^{1}(x-x^{2})\sin(n\pi x)dx
+$$
+$$
+C_{n}=\frac{ \int_{0}^{1}(x-x^{2})\sin(n\pi x)dx}{2\sinh(n\pi) }
+$$
+ Finally, we have:
+ $$
+ u(x, y)=\sum_{n=1}^{\infty}\frac{ \int_{0}^{1}(x-x^{2})\sin(n\pi x)dx}{2\sinh(n\pi) }\sin(n\pi x)\sinh(n\pi y) 
+ $$\par
+ Note that in the case we have more than one inhomogeneous boundary condition, we need to perform the \textbf{change of variables} to convert the equation to a problem with three homogeneous boundary conditions.\par
+
+
+
+\subsection{Inner product space}
+\hspace{5mm}
+Note that the definition of a vector space gives an algebraic structure for vectors (i.e., addition and scalar multiplication). In the following, we shall build a geometric structure for vectors, such as length, distance, angle, etc.\par
+First, we introduce the notation of \textit{inner product}, which is a generalization of  the dot product on the Euclidean space R$^{n}$.\\
+\textbf{Definition 5.1.} Let $V$ be a real vector space. Consider a function from $V \times V$ to R that maps any pair of $u, v \in V$ to a real number. The function is called an \textbf{inner product} donated by $\langle \cdot, \cdot \rangle $(i.e.,$\langle u, v \rangle $ is a real number) if for any $u, v, w \in V$ and $\alpha \in$ R it satisfies:
+$$
+\langle u, v \rangle  = \langle v, u \rangle 
+$$ 
+$$
+\langle u+w, v \rangle = \langle u, v \rangle + \langle w, v \rangle 
+$$
+$$
+\langle \alpha u, v \rangle = \alpha \langle u, v \rangle 
+$$
+$$
+\langle u, v \rangle \ge0,   \hspace{3mm}and \hspace{3mm}   \langle u, v \rangle  = 0 \hspace{3mm} if  \hspace{3mm}u=0
+$$\par
+Let us define next the notation of \textit{lengths}, which is called \textbf{norm} on the given vector space. \\
+\textbf{Definition 5.2.}Consider a function form a vector space $V$ to R. The function is called a \textbf{norm} denoted by $\| \cdot \|$ if it satisfies:
+$$
+\| u\| \ge0\hspace{3mm}and \hspace{3mm} \| u\|=0\hspace{3mm} if  \hspace{3mm}u=0
+$$
+$$
+\|\alpha u\| = |\alpha|\| u\| , \hspace{3mm} for\hspace{2mm} all\hspace{2mm} \alpha \in R
+$$
+$$
+\| u+v\| \le \| u\|+\| v\|
+$$\par
+A vector space on which a norm is defined is then called a normed space or normed vector space.\\
+\textbf{Theorem 5.1.} Given an inner product on a vector space $V$, the function defined by $\|u\| = \sqrt{\langle u, u \rangle}$ for all $u \in V$ is a norm. \\
+\textbf{Theorem 5.2.} (Cauchy-Schwarz inequality). For any $u,v \in V$, it holds that:
+$$
+|\langle u, v \rangle| \le \|u \| \|v \|=\sqrt{\langle u, u \rangle}\sqrt{\langle v, v \rangle}
+$$\\
+\textbf{Example 5.1.} in R$^{n}$ the dot product is an inner product:
+$$
+\langle u, v \rangle = u \cdot v = u_{1}v_{1}+u_{2}v_{2}+\cdot \cdot \cdot+u_{n}v_{n}
+$$
+The corresponding Euclidean norm is given by:
+$$
+\| u\| = \sqrt{\langle u, u \rangle}=\sqrt{u_{1}^{2}+u_{2}^{2}+\cdot \cdot \cdot+u_{n}^{2}}
+$$\\
+\textbf{Example 5.2.} Let $\hat{L}^{2} (\Omega; \mathbb{R})$ be the subspace of $C(\Omega; \mathbb{R})$ defined by:
+$$
+\hat{L}^{2} (\Omega; \mathbb{R}) = \{ u \in C (\Omega; \mathbb{R}) | \int_{\Omega}|u(x)|^2 dx < + \infty \}
+$$Define that
+$$
+\langle f,g\rangle =\int_{\Omega}f(x)g(x)dx, \hspace{10mm} \forall  f,g \in \hat{L}^{2} (\Omega; \mathbb{R})
+$$ is an inner product on $\hat{L}^{2} (\Omega; \mathbb{R})$ and the corresponding norm is given by:
+$$
+\|f\|=(\int_{\Omega}f(x)^{2}dx)^{1/2}
+$$
 \par
-We have the general solution as:
+ $\hat{L}^2(\Omega; \mathbb{R})$ is a function space defined on a domain $\Omega\subset\mathbb{R}^n$ that is a subspace of the space of continuous functions $C(\Omega; \mathbb{R})$.\par
+ Specifically, $\hat{L}^2(\Omega; \mathbb{R})$ is the space of square-integrable functions on $\Omega$, which means that a function $f:\Omega\rightarrow \mathbb{R}$ belongs to $\hat{L}^2(\Omega; \mathbb{R})$ if and only if its square is integrable on $\Omega$, i.e., if the integral of $|f(x)|^2$ over $\Omega$ is finite. More formally, we define $\hat{L}^2(\Omega; \mathbb{R})$ as the set of functions $f:\Omega\rightarrow \mathbb{R}$ that satisfy
+
+$$\int_\Omega |f(x)|^2 dx < \infty,$$
+
+where $dx$ denotes the integration measure on $\Omega$.
+
+The functions in ${L}^2(\Omega; \mathbb{R})$ are generally not required to be continuous, although they may have some continuity properties depending on the domain $\Omega$.
+
+The subspace $\hat{L}^2(\Omega; \mathbb{R})$ is a Hilbert space with respect to the inner product defined as
+
+$$\langle f,g \rangle_{L^2(\Omega)} = \int_\Omega f(x)g(x)dx,$$
+
+where $f,g\in \hat{L}^2(\Omega; \mathbb{R})$. This inner product induces a norm on $\hat{L}^2(\Omega; \mathbb{R})$ given by
+
+$$\|f\|_{L^2(\Omega)} = \sqrt{\langle f,f \rangle_{L^2(\Omega)}}.$$\par
+ 
+ 
+ 
+\textbf{What's the difference between $L^2(\Omega; \mathbb{R})$ and $\hat{L}^2(\Omega; \mathbb{R})$?}\par
+$L^2(\Omega; \mathbb{R})$ and $\hat{L}^2(\Omega; \mathbb{R})$ are both function spaces that consist of square-integrable functions on a domain $\Omega\subseteq \mathbb{R}^n$. The main difference between them is in their function spaces.
+
+$L^2(\Omega; \mathbb{R})$ is the space of all square-integrable functions on $\Omega$, regardless of their regularity properties. In particular, functions in $L^2(\Omega; \mathbb{R})$ need not be continuous or have any other regularity properties. The norm on $L^2(\Omega; \mathbb{R})$ is given by
+
+$$\|f\|_{L^2(\Omega)} = \sqrt{\int_{\Omega} |f(x)|^2 dx},$$
+
+which measures the size of a function in terms of its $L^2$ norm, or equivalently, the square root of the integral of its square over $\Omega$.
+
+On the other hand, $\hat{L}^2(\Omega; \mathbb{R})$ is a subspace of $L^2(\Omega; \mathbb{R})$ consisting of square-integrable functions on $\Omega$ that are also continuous on $\Omega$. That is, $\hat{L}^2(\Omega; \mathbb{R})$ consists of functions that are both square-integrable and continuous on $\Omega$. The norm on $\hat{L}^2(\Omega; \mathbb{R})$ is also given by the $L^2$ norm, but with the restriction that we consider only continuous functions:
+
+$$\|f\|_{\hat{L}^2(\Omega)} = \sqrt{\int_{\Omega} |f(x)|^2 dx}.$$
+
+In summary, the main difference between $L^2(\Omega; \mathbb{R})$ and $\hat{L}^2(\Omega; \mathbb{R})$ is that the former contains all square-integrable functions on $\Omega$, while the latter contains only those square-integrable functions that are also continuous on $\Omega$.\\
+\textbf{Orthogonal bases}. Let us first introduce the notion of \textit{angle}. Recall the following property of the dot product on $\mathbb{R}^{n}$:
 $$
-Y_{n}(y) = C_{1}(e^{n\pi y}-e^{-n\pi y}) =2C_{1}\sinh(n\pi y)
+u \cdot v = \|u\| \|v\| \cos (\theta)
+$$where $theta \in [0, \pi]$ is the angle formed by the two vectors $u$ and $v$. This can be generalized to any inner product space in a natural way by defining:
+$$
+\cos(\theta) = \frac{\langle u, v\rangle}{\|u\| \|v\|}
+$$where $u$ and $v$ are two vectors in a given inner product space $V$. Note that it follows from the Cauchy-Schwarz inequality that the ratio $ \frac{\langle u, v\rangle}{\|u\| \|v\|}$ is indeed between -1 and 1.\\
+\textbf{Definition 5.3} Let V be a vector space with an inner product $\langle \cdot,\cdot \rangle$. Two vector $u$ and $v$ in $V$ are called orthogonal (or perpendicular) if:
+$$
+\langle u, v\rangle =0
+$$\par
+A set of vectors $\{v_{1}, v_{2}, ...v_{n}$ in $V$ are orthogonal if:
+$$
+\langle v_{i}, v_{j}\rangle = 0 \hspace{3mm} for \hspace{3mm} any \hspace{3mm} i \neq j
+$$\par
+\textbf{Theorem 5.3} Let $V$ be a finite-dimensional inner product space with dimension $n$; and $\mathbb{B} = \{ e_{1}, e_{2}, ..., e_{n}\}$ be an orthonormal basis of $V$. Then for any $u \in V$, it holds that:
+$$
+u = \langle u, e_{1}\rangle e_{1}+\langle u, e_{2}\rangle e_{2}+ ...+\langle u, e_{n}\rangle e_{n} = \sum_{i=1}^{n}\langle u, e_{i}\rangle e_{i}
+$$and 
+$$
+\|u\|^{2} = | \langle u, e_{1}\rangle  |^{2}+ | \langle u, e_{2}\rangle  |^{2}+...+| \langle u, e_{n}\rangle  |^{2}=\sum_{i=1}^{n}| \langle u, e_{n}\rangle  |^{2}
+$$\par
+
+
+
+\subsection{Fourier transform}
+\hspace{5mm}
+Motivation: One can think of the Fourier transform as an analogue of the Fourier series for functions defined on $\mathbb{R}$ instead of $[-L, L]$.\par
+ Let's do a little calculation to see this is indeed the case. Remember for the heat equation on $[-L, L]$, if we have Dirichlet boundary condition we'll have the solution as Fourier sine series. If we have Neumann boundary condition, we'll have the solution as Fourier cosine series. \par
+ For heat equation on $[-L, L]$ with period boundary condition (symmetry boundary condition), the eigenvalue problem becomes:
+ $$
+ \left\{
+ \begin{array}{lll}
+ V'(x) = \beta V(x) \\
+ \\
+ V(-L) = V(L)\\
+ \\
+V'(-L) = V'(L)
+ \end{array}
+ \right.
+ $$\par
+ The eigenvalue and eigenfunctions are:
+ $$
+ \beta_{n}= - \left( \frac{n\pi}{L}\right)^{2}, n=0, 1, 2
+ $$
+ $$
+ V_{0} \equiv 1
+ $$
+ $$
+  \left\{
+ \begin{array}{lll}
+ V_{n}^{c}(x) = \cos  \left( \frac{n\pi}{L}x\right)  \\
+ \\
+ V_{n}^{s}(x) = \sin  \left( \frac{n\pi}{L}x\right)
+ \end{array}\right.
+ $$\par
+ These eigenfunctions form an orthogonal basis of 
+ $$
+ L^{2}([-L, L], \mathbb{R}) = \{ f, [-L, L] \to \mathbb{R} | \int_{-L}^{L} f^{2}(x) dx < \infty \}
+ $$\par
+ For each $f \in L^{2}([-L, L], \mathbb{R})$ it holds:
+ \begin{equation}
+ f(x) = \frac{\langle f, V_{0}\rangle}{\langle V_{0}, V_{0}\rangle}V_{0}+\sum_{n = 1}^{\infty}\frac{\langle f, V_{n}^{c}\rangle}{\langle V_{n}^{c}, V_{n}^{c}\rangle}V_{n}^{c}+\sum_{n = 1}^{\infty}\frac{\langle f, V_{n}^{s}\rangle}{\langle V_{n}^{s}, V_{n}^{s}\rangle}V_{n}^{s}
+ \end{equation} this is based on the Theorem 5.3\\
+ Also we have the orthogonormal part:
+ $$
+ \frac{\langle f, V_{n}^{c}\rangle}{\langle V_{n}^{c}, V_{n}^{c}\rangle}V_{n}^{c}=
+ \langle f, \frac{V_{n}^{c}}{\sqrt{\langle V_{n}^{c}, V_{n}^{c}\rangle}}\rangle \frac{V_{n}^{c}}{\sqrt{\langle V_{n}^{c}, V_{n}^{c}\rangle}}
+ $$
+ where the inner product is:
+ $$
+\langle f, V_{n}\rangle = \int_{-L}^{L} f(x)V_{n}(x)dx
+ $$\par
+ Check that we have:
+ $$
+ \langle V_{n}^{i}, V_{n}^{i}\rangle =
+ \left\{
+ \begin{array}{lll}
+ 2L, & n =0\\
+ L, & n\ge1, & i = c,s
+ \end{array}
+ \right.
+ $$\par 
+ So that we can rewrite Eq(32) as
+ \begin{equation}
+ f(x) = \frac{1}{2L}\int_{-L}^{L} f(x)V_{0}(x)dx+\frac{1}{L}
+ \sum_{n=1}^{\infty} \int_{-L}^{L} f(x) \cos  \left( \frac{n\pi}{L}x\right) dx \cdot \cos  \left( \frac{n\pi}{L}x\right)+
+ \end{equation} 
+ $$
+  \frac{1}{L}\sum_{n=1}^{\infty} \int_{-L}^{L} f(x) \sin  \left( \frac{n\pi}{L}x\right) dx \cdot \sin  \left( \frac{n\pi}{L}x\right)
+ $$
+ The RHS is the Fourier series.\par
+ Fourier series, Fourier sine series, and Fourier cosine series are all methods for representing periodic functions in terms of trigonometric functions, but they differ in the types of functions they can represent.
+
+A Fourier series represents a periodic function $f(x)$ with period $2\pi$ as a sum of trigonometric functions of the form $\cos(nx)$ and $\sin(nx)$, where $n$ is an integer. That is,
+
+$$f(x) = \frac{a_0}{2} + \sum_{n=1}^\infty \left[a_n \cos(nx) + b_n \sin(nx)\right],$$
+
+where the coefficients $a_0$, $a_n$, and $b_n$ are given by
+
+$$a_0 = \frac{1}{\pi} \int_{-\pi}^{\pi} f(x) dx,$$
+$$a_n = \frac{1}{\pi} \int_{-\pi}^{\pi} f(x) \cos(nx) dx,$$
+$$b_n = \frac{1}{\pi} \int_{-\pi}^{\pi} f(x) \sin(nx) dx.$$
+
+Note that the Fourier series can represent any periodic function with period $2\pi$, whether it is even, odd, or neither.
+
+A Fourier cosine series, on the other hand, represents a periodic function $f(x)$ with period $2\pi$ as a sum of cosine functions of the form $\cos(nx)$ only, that is
+
+$$f(x) = \frac{a_0}{2} + \sum_{n=1}^\infty a_n \cos(nx),$$
+
+where the coefficients $a_0$ and $a_n$ are given by
+
+$$a_0 = \frac{1}{\pi} \int_{-\pi}^{\pi} f(x) dx,$$
+$$a_n = \frac{1}{\pi} \int_{-\pi}^{\pi} f(x) \cos(nx) dx.$$
+
+Note that in the Fourier cosine series, there are no sine terms. Therefore, a Fourier cosine series can only represent even periodic functions, i.e., functions that satisfy $f(-x) = f(x)$.
+
+Finally, a Fourier sine series represents a periodic function $f(x)$ with period $2\pi$ as a sum of sine functions of the form $\sin(nx)$ only, that is
+
+$$f(x) = \sum_{n=1}^\infty b_n \sin(nx),$$
+
+where the coefficients $b_n$ are given by
+
+$$b_n = \frac{2}{\pi} \int_{0}^{\pi} f(x) \sin(nx) dx.$$
+
+Note that in the Fourier sine series, there are no cosine terms. Therefore, a Fourier sine series can only represent odd periodic functions, i.e., functions that satisfy $f(-x) = -f(x)$.
+
+In summary, the main difference between Fourier series, Fourier cosine series, and Fourier sine series is the type of functions they can represent: Fourier series can represent any periodic function, Fourier cosine series can only represent even periodic functions, and Fourier sine series can only represent odd periodic functions.\par
+Using Euler's formula $e^{ix} = \cos(x) + i\sin(x)$, we can rewrite the Fourier series as:
+\begin{equation}
+f(x) = \frac{1}{2L} \sum_{n= -\infty}^{\infty} \int_{-L}^{L} f(s)e^{-i(\frac{n\pi (s-x)}{L})}ds
+\end{equation}
+$$
+e^{-i(\frac{n\pi (s-x)}{L})}=e^{-i(\frac{n\pi s}{L})}\cdot e^{i(\frac{n\pi x}{L})}=
+ [\cos(\frac{n\pi s}{L}) - i\sin(\frac{n\pi s}{L})]\cdot [\cos(\frac{n\pi x}{L}) + i\sin(\frac{n\pi x}{L})]
+$$
+$$
+=\cos(\frac{n\pi s}{L})\cos(\frac{n\pi x}{L})+i \cos(\frac{n\pi s}{L}) \sin(\frac{n\pi x}{L}) - i\cos(\frac{n\pi x}{L})\sin(\frac{n\pi s}{L})+\sin(\frac{n\pi s}{L})\sin(\frac{n\pi x}{L})
+$$
+$$
+\int_{-L}^{L} f(s)e^{-i(\frac{n\pi (s-x)}{L})}ds=\int_{-L}^{L} f(s) [\cos(\frac{n\pi s}{L}) - i\sin(\frac{n\pi s}{L})]\cdot [\cos(\frac{n\pi x}{L}) + i\sin(\frac{n\pi x}{L})] ds
+$$\par
+Using Euler's formula $e^{ix} = \cos(x) + i\sin(x)$, we can rewrite the cosine and sine terms as complex exponentials:
+
+$$\cos\left(\frac{n\pi}{L}s\right) = \frac{1}{2}\left(e^{i\frac{n\pi}{L}s} + e^{-i\frac{n\pi}{L}s}\right),\quad \sin\left(\frac{n\pi}{L}s\right) = \frac{1}{2i}\left(e^{i\frac{n\pi}{L}s} - e^{-i\frac{n\pi}{L}s}\right)$$
+
+Substituting these into the expression for $f(x)$, we have:
+
+\begin{align*}
+f(x) &= \frac{1}{2L}\int_{-L}^{L} f(x)V_{0}dx + \frac{1}{L}\sum_{n=1}^{\infty} \int_{-L}^{L} f(s) \left(\frac{1}{2}\left(e^{i\frac{n\pi}{L}s} + e^{-i\frac{n\pi}{L}s}\right)\right) ds \cdot \left(\frac{1}{2}\left(e^{i\frac{n\pi}{L}x} + e^{-i\frac{n\pi}{L}x}\right)\right) \\
+&+\frac{1}{L} \sum_{n=1}^{\infty} \int_{-L}^{L} f(s) \left(\frac{1}{2i}\left(e^{i\frac{n\pi}{L}s} - e^{-i\frac{n\pi}{L}s}\right)\right) ds \cdot \left(\frac{1}{2i}\left(e^{i\frac{n\pi}{L}x} - e^{-i\frac{n\pi}{L}x}\right)\right)
+\end{align*} we can find that
+$$
+\frac{1}{4L}\sum_{n=1}^{\infty} \int_{-L}^{L} f(s) \left(\left(e^{i\frac{n\pi}{L}s} + e^{-i\frac{n\pi}{L}s}\right)\right) ds \cdot \left(\left(e^{i\frac{n\pi}{L}x} + e^{-i\frac{n\pi}{L}x}\right)\right)+
+$$
+$$
+-\frac{1}{4L} \sum_{n=1}^{\infty} \int_{-L}^{L} f(s) \left(\left(e^{i\frac{n\pi}{L}s} - e^{-i\frac{n\pi}{L}s}\right)\right) ds \cdot \left(\left(e^{i\frac{n\pi}{L}x} - e^{-i\frac{n\pi}{L}x}\right)\right)
+$$
+$$
+=
+\frac{1}{2L}\sum_{n=1}^{\infty} \int_{-L}^{L} f(s) \left(\left(e^{i\frac{n\pi}{L}s}\right)\right) ds \cdot \left(\left( e^{-i\frac{n\pi}{L}x}\right)\right)+\frac{1}{2L}\sum_{n=1}^{\infty} \int_{-L}^{L} f(s) \left(\left(e^{-i\frac{n\pi}{L}s}\right)\right) ds \cdot \left(\left( e^{i\frac{n\pi}{L}x}\right)\right)
+$$
+$$
+=
+\frac{1}{2L}\sum_{n=1}^{\infty} \int_{-L}^{L} f(s) \left(\left(e^{i\frac{n\pi}{L}s}\right)\right) ds \cdot \left(\left( e^{-i\frac{n\pi}{L}x}\right)\right)+\frac{1}{2L}\sum_{-\infty}^{n =-1} \int_{-L}^{L} f(s) \left(\left(e^{i\frac{n\pi}{L}s}\right)\right) ds \cdot \left(\left( e^{-i\frac{n\pi}{L}x}\right)\right)
 $$
 
 
+note that when $n = 0$
+$$
+\frac{1}{2L}\int_{-L}^{L} f(x)V_{0}dx = \left(\frac{1}{2L}\int_{-L}^{L}f(s) e^{-i\frac{n\pi}{L}(s-x)} ds\right) e^{i\frac{n\pi}{L}x}=\frac{1}{2L}\int_{-L}^{L}f(s) V_{0} ds
+$$
+Simplifying this expression, we get:
 
-
-
-
-
-
-
-
-
+$$f(x) = \frac{1}{2L} \sum_{-\infty}^{\infty} \int_{-L}^{L} f(s)e^{-i(\frac{n\pi (s-x)}{L})}ds$$\par
+What we get if  $L \to \infty$?\\ 
+To see what happens, we define:
+$$
+\omega_{n} = \frac{n\pi}{L}, \hspace{5mm} n \in \mathbb{Z}
+$$
+$$
+\omega_{n+1}-\omega_{n}=\frac{\pi}{L}
+$$as $L \to \infty$ the difference $\frac{\pi}{L} \to 0$ and $\omega_{n}$ becomes continuous.\par
+Thus, we can write the $\sum$ as $\int$:
+\begin{equation}
+f(x) = \frac{1}{2L} \sum_{-\infty}^{\infty} \int_{-L}^{L} f(s)e^{-i(\frac{n\pi (s-x)}{L})}ds
+\end{equation}
+\begin{align*}
+&= \frac{1}{2\pi} \left( \frac{\pi}{L} \right) \sum_{-\infty}^{\infty} \int_{-L}^{L} f(s)e^{-i(\frac{n\pi (s-x)}{L})}ds\\
+&=  \frac{1}{2\pi} \int_{-\infty}^{\infty}\int_{-\infty}^{\infty} f(s)e^{-i\omega (s-x)}dsd\omega
+\end{align*}\par
+To summarize, we have:
+\begin{equation}
+f(x) = \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{\infty} F(\omega) e^{i\omega x} d\omega
+\end{equation}with
+\begin{equation}
+F(\omega) = \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{\infty} f(s) e^{-i\omega s}ds
+\end{equation} which are the \textbf{Fourier transform} and \textbf{inverse Fourier transform}. 
 
 
 
@@ -713,37 +1020,3 @@ $$
 
 
 \end{document}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
