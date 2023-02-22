@@ -51,8 +51,10 @@
 
 %%% END Article customizations
 %%%package added by Wenge
-\usepackage{esint}
-
+%%%\usepackage{esint}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
 %%% The "real" document content comes below...
 
 \title{Notes for fluid dynamics}
@@ -366,22 +368,173 @@ Thus, for the incompressible flow, we have:
 \begin{equation}
 \rho \frac{\partial \vec{v}}{\partial t} + {\rho (\vec{v} \cdot \nabla)\vec{v}} = -\nabla p + \mu \nabla^{2}\vec{v} +\rho \vec{F}
 \end{equation}
+\vspace{2cm}
 
 
+\subsection{Numerical solution of the Navier-Stokes equations}
+\hspace{3mm} In this chapter, we discuss numerical methods to solve the Navier-Stokes equations, allowing for variable numerical methods and viscosity. We'll use the finite-volume method and limit the presentation to regular Cartesian grids. We assume incompressible flows.\par
+For any numerical solution of the time-dependent Navier-Stokes equation it is necessary to decided:\\
+(i) how the grid points, where the various discrete approximations are stored, are arranged;\\
+(ii) how the velocity field is integrated in time;\\
+(iii) how thge advection and the viscous terms are discretized; \\
+(iv) how the pressure equation, resulting from the incompressibility coindition, is solved and \\
+(v) how boundary conditions are implemented. \par
+The governing equation are the Navier-Stokes equations for incompressible, Newtonian flow derived in the previous subsection. The equation here can be written in a number of equivalent forms. We will write the momentum equation symbolocally as:
+\begin{equation}
+\rho\frac{\partial {\textbf{u}}}{\partial t} + \rho \textbf{A} = -\nabla p+\textbf{D} +\textbf{f}
+\end{equation}
+where $\textbf{A}=\nabla \cdot (\textbf{uu})$ is the advection term, $\textbf{D} =\nabla \cdot \mu(\nabla \textbf{u}+\nabla\textbf{u}^{T}) $ is the diffusion term and \textbf{f} denotes all other forces, such as gravity and surface tension.\par
+\vspace{3mm}
+\textbf{Time integration}\par
+For incompressible flows, where the pressure must be adjusted to give a divergence-free velocity field at the end of each time-step, the governing equation are usually solved by the so-called projection method. In this method, a temporary velocity field is first found by ignoring the pressure gradient. This velocity field is generally not divergence free and in the second step, the velocity is corrected by adding the appropriate pressure gradient. Formally, the second step is a projection onto a space of divergence-free velocity fields. Hence the name. \par
+The integration in time is usually done using a second-order (or higher) method, but for simplicity we start by describing a first-order method. Using a first order, explicit, forward-in-time discretization of the time derivative, the momentum equation becomes:
+\begin{equation}
+\frac{\textbf{u}^{n+1}-\textbf{u}^{n}}{\Delta t} + \textbf{A}_{h}^{n} = \frac{1}{\rho^{n}}(-\nabla_{h}p + \textbf{D}_{h}^{n}+ \textbf{f}^{n})
+\end{equation} 
+here $\Delta t$ is the time step. The superscript $n$ denotes a quantity evaluated at the begining of the step and $n+1$ identifies the end of the step. The notation $\textbf{A}_{h}^{n} $ and $\textbf{D}_{h}^{h} $ are the numerical approximations of the advection and diffusion terms, and $\nabla_{n}$ stands for a numerical approximation of the gradient operators. The velocity at the end of the time step must be divergence free:
+\begin{equation}
+\nabla_{h}\cdot \textbf{u}^{n+1} = 0
+\end{equation}\par 
+The monentum equation is split into two parts: the first is a predictor step, where a temporary velocity field ($\textbf{u}^{*}$) is found by ignoring the effect of the pressure:
+\begin{equation}
+\frac{\textbf{u}^{*}-\textbf{u}^{n}}{\Delta t} = -\textbf{A}_{h}^{n}+\frac{1}{\rho^{n}}( \textbf{D}_{h}^{n}+ \textbf{f}^{n})
+\end{equation}
+In the second step, the porjection step, the pressure gradient is added to yield the final velocity at the new time step:
+\begin{equation}
+\frac{\textbf{u}^{n+1}-\textbf{u}^{*}}{\Delta t}  = -\frac{1}{\rho^{n}}\nabla_{h}p 
+\end{equation}
+Note that combined these two equation we get:
+$$
+\frac{\textbf{u}^{n+1}-\textbf{u}^{*}}{\Delta t} +\frac{\textbf{u}^{*}-\textbf{u}^{n}}{\Delta t} =\frac{\textbf{u}^{n+1}-\textbf{u}^{n}}{\Delta t} =- \textbf{A}_{h}^{n}+ \frac{1}{\rho^{n}}(-\nabla_{h}p + \textbf{D}_{h}^{n}+ \textbf{f}^{n})
+$$\par
+To find the pressure, such that the velocity at the new time step is divergence free $\nabla_{h}\cdot \textbf{u}^{n+1} = 0$, we take the divergence of Eq(15) and eliminate $\textbf{u}^{n+1}$, resulting a \textbf{Poisson equation} for the pressure:
+\begin{equation}
+\nabla_{h}\cdot \left(\frac{1}{\rho^{n}}\nabla_{h}p  \right) = \frac{1}{\Delta t}\nabla_{h} \cdot \textbf{u}^{*}
+\end{equation}\par
+The scheme described above is completely explicit and the time step must, therefore, be small enough to ensure stability. Analysis of stability will be disbussed in the future.\par
+Now we discuss about the second order accuracy method. The simplest way to obtain a higher accuracy is using a second-order predictor-corrector methoid where the first-order explicit method described above is used to find a temporary velocity $\textbf{u}^{tmp}$. The temporary velocity is then used to compute an approximate right-hand side (\textbf{RHS}) as $- \textbf{A}_{h}^{n}+ \frac{1}{\rho^{n}}(-\nabla_{h}p + \textbf{D}_{h}^{n}+ \textbf{f}^{n})$. So a second-order approximation for the new velocity can be found by:
+\begin{equation}
+\frac{\textbf{u}^{n+1}-\textbf{u}^{n}}{\Delta t}=\frac{1}{2}(\textbf{RHS}^{n}+\textbf{RHS}^{tmp})
+\end{equation}\par
+\vspace{3mm}
+\textbf{Spatial discretization}\par
+To discretize the momentum equation, we use the finite-volume approach, where the conservation principles of mass and momentum are applied to a small control volume. The integral form of governing equations are taken as the starting point for the derivation of the discrete approximations. The velocity at the center of the control volume $\textbf{u}_{c}$ is approximated by the avergae value:
+\begin{equation}
+\textbf{u}_{c} = \frac{1}{V} \int_{V} \textbf{u(\textbf{x})}dv
+\end{equation}
+here $V$ is the volume of the control volume and, for a two-dimensional rectangular control volume, $V=\Delta x \Delta y$. 
 
-\subsection{Conservation of energy}
+\textbf{Identity 1}: $ \nabla \cdot (\vec{u}\vec{u}) = \vec{u} \cdot \nabla \vec{u}$\\
+Starting with the left-hand side, we can expand the tensor product $\vec{u}\vec{u}$ using its components:
 
+$$ (\vec{u}\vec{u})_{ij} = u_i u_j $$
 
+The divergence of this tensor product can then be expressed as follows:
 
+$$ \begin{aligned} (\nabla \cdot (\vec{u}\vec{u}))_{i} = \frac{\partial}{\partial x_j}(\vec{u}\vec{u})_{ij} = \frac{\partial}{\partial x_j}(u_i u_j) = u_j\frac{\partial u_i}{\partial x_j} + u_i\frac{\partial u_j}{\partial x_j} \end{aligned} $$
+with the incompressibility condition, we have:
+$$
+\frac{\partial u_j}{\partial x_j} =0
+$$
 
+In the last line, we have used the product rule of differentiation. We can now rewrite the right-hand side using the gradient of the velocity vector:
 
+$$ \begin{aligned} (\vec{u}\cdot \nabla)\vec{u}_i &= u_j\frac{\partial u_i}{\partial x_j} \end{aligned} $$
 
+Comparing the expressions for the left-hand and right-hand sides, we see that they are equal:
 
+$$ (\nabla \cdot (\vec{u}\vec{u}))_i = (\vec{u}\cdot \nabla)\vec{u}_i $$
+for any $i$. Therefore, we have shown that $\nabla \cdot (\vec{u}\vec{u}) = \vec{u} \cdot \nabla \vec{u}$.\par
 
-
-
-
-
+\textbf{Identity 2}: $ (\nabla \cdot (\nabla\vec{u} +\nabla\vec{u}^{T})) = \nabla^{2}\vec{u}$\\
+ First we should now the transpose:
+ $$ a_{ji}^{T} = a_{ij} $$
+ Then we have
+ $$
+  (\nabla\vec{u} +\nabla\vec{u}^{T})_{ij}= \frac{\partial u_{i}}{\partial x_{j}}+\left(\frac{\partial u_{i}}{\partial x_{j}}\right)^{T}= \frac{\partial u_{i}}{\partial x_{j}}+ \frac{\partial u_{j}}{\partial x_{i}}
+ $$
+ Then, we apply the gradient operator:
+ $$
+ \nabla \cdot (\nabla\vec{u} +\nabla\vec{u}^{T})=\frac{\partial}{\partial x_{j}}\cdot (\nabla\vec{u} +\nabla\vec{u}^{T})_{ij}=\frac{\partial}{\partial x_{j}}\frac{\partial u_{i}}{\partial x_{j}}+\frac{\partial}{\partial x_{j}}\frac{\partial u_{j}}{\partial x_{i}}=\frac{\partial}{\partial x_{j}}\frac{\partial u_{i}}{\partial x_{j}} =\nabla^{2}\vec{u}
+ $$with considering the incompressibility.\par
+ Recall that $\textbf{A}=\nabla \cdot (\textbf{uu})$ is the advection term, $\textbf{D} =\nabla \cdot \mu(\nabla \textbf{u}+\nabla\textbf{u}^{T}) $ is the diffusion term.To find the numerical approximations for the advection and the diffusion terms, we first define the average value over a control volume:
+\begin{equation}
+\textbf{A}_{c} = \frac{1}{V}  \int_{V} \nabla \cdot (\textbf{uu})dv=\frac{1}{V}  \oint_{S}  (\textbf{uu}) \cdot \textbf{n}ds = \frac{1}{V}  \oint_{S}  \textbf{u}(\textbf{u} \cdot \textbf{n})ds
+\end{equation}
+\begin{equation}
+\textbf{D}_{c} = \frac{1}{V}  \int_{V} \nabla \cdot (\textbf{T}^{v})dv=\frac{1}{V}  \oint_{S}  (\textbf{T}^{v}) \cdot \textbf{n}ds=\frac{1}{V}  \oint_{S}  \mu(\nabla \textbf{u}+\nabla\textbf{u}^{T})  \cdot \textbf{n}ds
+\end{equation}where $\textbf{T}^{v} =\mu(\nabla \textbf{u}+\nabla\textbf{u}^{T}) $ is the viscous stress tensor. Also$ (\textbf{uu}) \cdot \textbf{n}$ = $(uu)_{ij}\cdot n_{j}$ = $u_{i}u_j n_j$ = $\textbf{u}(\textbf{u} \cdot \textbf{n})$.\par
+The avergae value of the pressure gradient is:
+\begin{equation}
+(\Delta p)_c = \frac{1}{V} \int_{V} \Delta pdv = \frac{1}{V} \oint_{S} p\textbf{n}ds
+\end{equation}and also the average force:
+\begin{equation}
+\textbf{f}_{c} = \frac{1}{V} \int_{V} \textbf{f(\textbf{x})}dv
+\end{equation}\par
+The continuity equation is approximated in the integral form:
+\begin{equation}
+\int_V
+\nabla_{h}\cdot \textbf{u}^{n+1}dv =\oint_{S}\textbf{u}^{n+1}\cdot \textbf{n} ds= 0
+\end{equation}\par 
+Before we derive discrete approximations to the Navier-Stokes equations by approximating the integrals above, we have to decide what the control volumes look like and where the various variables are loacted with respect to each other. \par
+\begin{figure}[h]
+\includegraphics[scale=0.6]{staggered mesh 3.1.JPG}
+\centering
+\end{figure}
+\par
+The staggered grid is shown in Fig. 3.1. The starting point is a control volume around the pressure points (outlined by a thick line). The role of pressure for incompressible flows is to force the divergence of the velocity field to be zero: the pressure must be raised if there is a net inflow into this control volume and lowered if there is net outflow. For the computation of the net flow in or out of the control volume around the pressure node we need the horizontal velocity components $u$ at the vertical boundaries and the vertical velocity components $v$ on the horizontal boundaries. It is natural to locate the velocity components at the middle of the boundaries, where we need them, and the grid for the horizontal velocity is therefore displaced half a mesh to the right from the pressure node and the vertical velocity grid is displaced half a mesh upward as shown in Fig.3.2.
+\begin{figure}[h]
+\includegraphics[scale=0.6]{staggered mesh 3.2.JPG}
+\centering
+\end{figure}
+\par
+It is customary to identify the pressure nodes by the indices $(i, j)$ and to refer the location of the $u$-velocity component by $(i+1, j)$ and the location of the $v$-velocity component by $(i, j+1)$. \par
+On the staggered grid Fig. 3.1, the discrete form of the continuity equation is obtained by writing the integral in Eq(23) for each side of the control volume:
+\begin{equation}
+\begin{aligned}
+0 &=\frac{1}{\Delta x\Delta y} \oint_{S} \textbf{u}^{n+1} \cdot \textbf{n} ds \\ 
+&= \frac{1}{\Delta x\Delta y} \left\{
+\int_{i+1/2, j} u^{n+1}dy -\int_{i-1/2, j} u^{n+1}dy+\int_{i, j+1/2} v^{n+1}dx-\int_{i, j-1/2} v^{n+1}dx
+ \right\}
+\end{aligned}
+\end{equation}\par
+Then by approximating the integrals by the midpoint rule, we have:
+\begin{equation}
+\frac{1}{\Delta x\Delta y} \left[\left(u_{i+1/2, j}^{n+1}-u_{i-1/2, j}^{n+1}\right)\Delta y +\left(v_{i, j+1/2}^{n+1}-v_{i, j-1/2}^{n+1}\right)\Delta x\right] = 0
+\end{equation}\par
+Rewriting the equation we can get:
+\begin{equation}
+\frac{u_{i+1/2, j}^{n+1}-u_{i-1/2, j}^{n+1}}{\Delta x}+\frac{v_{i, j+1/2}^{n+1}-v_{i, j-1/2}^{n+1}}{\Delta y} = 0
+\end{equation}\par
+\begin{figure}[h]
+\includegraphics[scale=0.6]{Predicted velocity.JPG}
+\centering
+\end{figure}\par
+There are three main reason why the staggered grid is so widely used  instead of collocated grid where all the variables are located at the same point. One is accuracy. Since the pressure gradient is computed as the difference between adjacent point, versus points two $\Delta x$ or $\Delta y$ apart when a collocated grid is used, the mesh is in effect finer. The second reason is that it is relatively simple to preduce conservative methods when working on a staggered grid. The third is that it results in a tighter coupling between the variables than if they were all located at the same grid node. 
+\vspace{3mm}
+\textbf{Discretization of the advection terms}\par
+The discrete approximation of the $x$-component of the advection term is found by approximating the integral in Eq(19) by the midpoint rule:
+$$
+\textbf{A}_{c} = \frac{1}{V}  \int_{V} \nabla \cdot (\textbf{uu})dv=\frac{1}{V}  \oint_{S}  (\textbf{uu}) \cdot \textbf{n}ds = \frac{1}{V}  \oint_{S}  \textbf{u}(\textbf{u} \cdot \textbf{n})ds
+$$in the 2D case, we have $\textbf{u} = (u, v)$ and the normal vector is $(0, 1), (1, 0), (0, -1), (-1, 0)$.\\
+The difference between the left and right side is $u (u,v)\cdot(1,0)$+$u (u,v)\cdot(-1,0)$\\
+The difference between the top and bottom side is $u (u,v)\cdot(0,1)$+$u (u,v)\cdot(0,-1)$\\
+\begin{equation}
+(A_{x})_{i+1/2, j} = \frac{1}{\Delta x\Delta y} \left\{\left[
+(uu)_{i+1, j} -(uu)_{i, j}\right] \Delta y +\left[ (uv)_{i+1/2, j+1/2} -(uv)_{i+1/2, j-1/2}\right]\Delta x
+\right\}
+\end{equation}
+Here the advection term is corresponding to certain velocity $(A_{x})_{i+1/2, j} \to u_{i+1/2, j}$ as shown in Fig. 3.2. The this explain why the left side is $(uu)_{i, j}$ and the right side is $(uu)_{i+1, j}$, the top side is $(uv)_{i+1/2, j+1/2}$  and the bottom side is $(uv)_{i+1/2, j-1/2}$. 
+\begin{figure}[h]
+\includegraphics[scale=0.6]{staggered mesh 3.2.JPG}
+\centering
+\end{figure}\par 
+The y-component is approximateed as:
+\begin{equation}
+(A_{y})_{i, j+1/2} = \frac{1}{\Delta x\Delta y} \left\{\left[
+(uv)_{i+1/2, j+1/2} -(uv)_{i-1/2, j+1/2}\right] \Delta y +\left[ (vv)_{i, j+1} -(vv)_{i, j}\right]\Delta x
+\right\}
+\end{equation}
 
 
 
