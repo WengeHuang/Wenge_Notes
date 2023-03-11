@@ -995,12 +995,163 @@ f(x) = \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{\infty} F(\omega) e^{i\omega x} d\om
 \end{equation}with
 \begin{equation}
 F(\omega) = \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{\infty} f(s) e^{-i\omega s}ds
-\end{equation} which are the \textbf{Fourier transform} and \textbf{inverse Fourier transform}. 
-
-
-
-
-
+\end{equation} which are the \textbf{Fourier transform} and \textbf{inverse Fourier transform}. \par
+The Fourier transform of an \textbf{absolutely integrable function} ($L^{1}$ space) $f$: $\mathbb{R} \to \mathbb{R}$ is defined by:
+$$
+F(\omega) =c(\omega) = \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{\infty} f(s) e^{-i\omega s}ds
+$$\par
+The inverse Fourier transfer if $\hat{f}$ is defined by:
+$$
+\check{\hat{f}} (x) = \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{\infty}\hat{f}(\omega)e^{i\omega x} d\omega
+$$Note that $\hat{f}$ is called the frequence representation of $f$. The Fourier integral expresses $f$ as a supperposition of the builf-block functions $\left\{ e^{i \omega x} | \omega \in \mathbb{R}  \right\}$. So $\left\{ e^{i \omega x} | \omega \in \mathbb{R}  \right\}$ plays the sam role as the eigenfunctions. \par
+There are some properties of the Fourier transform:\\
+\textbf{(i)}  $$\hat{ (\alpha f + \beta g)} (\omega) = \alpha \hat{f}(\omega) + \beta \hat{g}(\omega)$$Fourier transform is linear\\
+\textbf{(ii)} $$
+\mathbb{F} \left\{f (x-a)\right\} =e^{-i a x}  \hat{f} (\omega) = e^{-i a x}\mathbb{F} \left\{f (x)\right\}
+$$
+\textbf{(iii)} $$
+\mathbb{F} \left\{ e^{i a x} f (x)\right\} = \hat{f} (\omega - a)
+$$\\
+\textbf{(iv)}
+$$
+ \mathbb{F} \left\{ f^{(n)}(x)  \right\} = (i\omega)^{n}\hat{f}(\omega)
+$$here the $n$ means the number of derivative\\
+\textbf{(v)}
+$$
+\mathbb{F}  \left\{  (-ix)^{n}  f(x)  \right\} = \frac{d^{n} \hat{f}(x)}{d \omega^{n}}
+$$\\
+This one is very important:\\
+\textbf{(vi)}
+$$
+\mathbb{F}^{-1}\left\{ \hat{f}(\omega) \hat{g}(\omega) \right\} = \frac{1}{\sqrt{2 \pi}}(f * g) (x)
+$$\\
+\textbf{(vii)}
+Assume $f \in L^{2} (\mathbb{R}; \mathbb{R})$ we have:
+$$
+f = \check{\hat{f}}
+$$\par
+Now we'll focus our anasys on property (vi). We have:
+$$
+\mathbb{F}^{-1}\left\{ \hat{f}(\omega) \hat{f}(\omega) \right\} = \frac{1}{\sqrt{2 \pi}}(f * g) (x) = \frac{1}{\sqrt{2 \pi}} \int_{-\infty}^{\infty} f(s) g(x -s) ds = \frac{1}{\sqrt{2 \pi}} \int_{-\infty}^{\infty} f(x-s) g(s) ds 
+$$\par
+A side note about convolution: convolution can be regarded as a special weighted averaging  process. \par
+Now let's show the proof of the convolution. We know that:
+$$
+\mathbb{F}\left\{ f (x) \right\} =\frac{1}{\sqrt{2 \pi}} \int_{-\infty}^{\infty} f(x) e^{-i \omega x}dx
+$$
+\begin{align*}
+\mathbb{F}\left\{ (f * g) (x) \right\} &=\frac{1}{\sqrt{2 \pi}} \int_{-\infty}^{\infty} (f * g) (x) e^{-i \omega x}dx \\
+&=\frac{1}{\sqrt{2 \pi}} \int_{-\infty}^{\infty} \left( \int_{-\infty}^{\infty} f(s) g(x -s) ds  \right) e^{-i \omega x}dx\\
+&=\frac{1}{\sqrt{2 \pi}} \int_{-\infty}^{\infty}  \left(  \int_{-\infty}^{\infty} g(x -s)e^{-i \omega x}dx \right)f(s) ds\\
+&= \frac{1}{\sqrt{2 \pi}} \int_{-\infty}^{\infty}  \left(  \int_{-\infty}^{\infty} g(x -s)e^{-i \omega (x - s)}dx \right)f(s)e^{-i \omega   s} ds\\
+&= \frac{1}{\sqrt{2 \pi}}  \int_{-\infty}^{\infty} g(x -s)e^{-i \omega (x - s)}dx  \sqrt{2 \pi}\frac{1}{\sqrt{2 \pi}}\int_{-\infty}^{\infty} f(s)e^{-i \omega  s}ds\\
+&= \sqrt{2 \pi} \hat{g}(\omega)\hat{f}(\omega)
+\end{align*}\par
+Example: find the Fourier transform of the following equation with $a >0$:
+$$
+f(x) = e^{-a x^{2}}
+$$solution
+$$
+\mathbb{F}\left\{ f(x) \right\} = \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{\infty}e^{-a x^{2}} e^{-i\omega x}dx = \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{\infty}e^{-a (x^{2}+ \frac{i \omega}{a}x)} dx = \frac{1}{\sqrt{2\pi}} e^{-\frac{\omega^{2}}{4a}}\int_{-\infty}^{\infty}e^{-a (x+ \frac{i \omega}{2a})^{2}} dx
+$$using change of variable and the polar coordinates, we have:
+$$
+\int_{-\infty}^{\infty} e^{-a y^{2}}dy = \sqrt{\frac{\pi}{a}}
+$$ Finally we find:
+$$
+\mathbb{F}\left\{ e^{-a x^{2}} \right\} = \frac{1}{\sqrt{2a}}e^{-\frac{\omega^{2}}{4a}}
+$$\par Then we show how to use Fourier transform to solve PDEs. For the following initial value problems:
+\begin{equation}
+\left\{
+\begin{array}{lll}
+u_{t}  = u_{xx} \\
+\\
+u(x, 0) = \phi (x)
+\end{array}\right.
+\end{equation}
+Let's donate $\hat{u}(\omega, t)$ as the Fourier transform of $u(x, t)$ w.r.t $x$.
+$$
+\hat{u}(\omega, t) = \frac{1}{\sqrt{2 \pi}} \int_{-\infty}^{\infty}u(x, t) e^{-i \omega x}dx
+$$then we plug it into $u_{t}  = u_{xx}$
+$$
+\frac{\partial }{\partial t}\hat{u}(\omega, t) =  \mathbb{F} \left\{ u^{(2)}(x, t)  \right\} = (i\omega)^{2}\hat{u}(\omega, t)= -\omega^{2}\hat{u}(\omega, t)
+$$Now we get a new ODE
+\begin{equation}
+\left\{
+\begin{array}{lll}
+\frac{\partial }{\partial t}\hat{u}(\omega, t)  =  -\omega^{2}\hat{u}(\omega, t) \\
+\\
+\hat{u}(\omega, t)  = \hat{\phi} (\omega)
+\end{array}\right.
+\end{equation}we can solve it and find that:
+$$
+\hat{u}(\omega, t) = \hat{\phi} (\omega) e^{-\omega^{2}t}
+$$ Now we need to find the inverse of the Fourier transform and get the solution.
+$$
+\mathbb{F}^{-1}\left\{ \hat{\phi} (\omega) e^{-\omega^{2}t} \right\}
+$$recall that in the example above, we have:
+$$
+\mathbb{F}\left\{ e^{-a x^{2}} \right\} = \frac{1}{\sqrt{2a}}e^{-\frac{\omega^{2}}{4a}}
+$$with some scaling, we have:
+$$
+\mathbb{F}\left\{ \frac{1}{\sqrt{2 t}} e^{- \frac{x^{2}}{4t}} \right\} =\mathbb{F}\left\{ g(x, t) \right\} =e^{-\omega^{2}t}
+$$
+we have:
+\begin{align*}
+u(x, t) &=\mathbb{F}^{-1}\left\{ \hat{\phi} (\omega) \hat{g}(x, t) \right\}(x, t) = \frac{1}{\sqrt{2 \pi}}\int_{-\infty}^{\infty} \phi(s) g(x-s, t) ds\\
+&= \frac{1}{\sqrt{4 \pi t}}\int_{-\infty}^{\infty} e^{- \frac{(x-s)^{2}}{4t}} \phi(s) ds
+\end{align*}\par
+We can define that:
+$$
+\Phi (x, t) = \frac{1}{\sqrt{4 \pi t}} e^{-\frac{x^2}{4t}}
+$$ $x\in \mathbb{R}, t > 0$ is called the fundamental solution of the 1D heat equation. \par
+Then, we can use the convolution of the fundamental solution to express the solution:
+$$
+u(x, t) = \int_{-\infty}^{\infty} \Phi(x-s) \phi(s) ds = \Phi (x, t) * \phi(x)
+$$\par
+Next, we consider the Fourier sine and cosine transforms. They are analogous to the Fourier transform. \\
+Consider an odd function $f : \mathbb{R} \to \mathbb{R}$ ($f(x) =- f(-x)$):
+\begin{align*}
+\hat{f}(\omega) &= \frac{ 1}{\sqrt{2 \pi}} \int_{-\infty}^{\infty} f(x) e^{-i \omega x} dx \\
+& =  \frac{ 1}{\sqrt{2 \pi}}\int_{-\infty}^{\infty} f(x) \cos(\omega x) dx +  \frac{ 1}{2 \pi}\int_{-\infty}^{\infty} i f(x) \sin(-\omega x) dx\\
+& = - \frac{ 2i}{\sqrt{2 \pi}}\int_{0}^{\infty} f(x) \sin(\omega x) dx \\ \omega \in \mathbb{R}
+\end{align*} since
+$f(x) \cos(\omega x)$ is $odd\cdot even = odd$ function and the integration from $ -\infty$ to $\infty$ is 0. \par
+Note that $\hat{f}(\omega)$ itself is also an odd function with respect to $\omega$. 
+$$
+\hat{f}(\omega) = - \hat{f}(-\omega)
+$$\par
+The inverse Fourier transform:
+$$
+f(x) =  \frac{ 1}{\sqrt{2 \pi}} \int_{-\infty}^{\infty} \hat{f}(\omega) e^{i \omega x} d \omega = \frac{ 2i}{\sqrt{2 \pi}}\int_{0}^{\infty}\hat{f}(\omega) \sin(\omega x) d \omega
+$$\par
+Here are some properties of the Fourier sine transform. Assume $f: \to [0, \infty) \mathbb{R} $ is absolutely integrable, we define:
+$$
+\mathbb{F}_{S}\left\{ f(x) \right\} = F_{S}(\omega) = \sqrt{\frac{2}{\pi}} \int_{0}^{\infty} f(x) \sin (\omega x) dx
+$$is called the Fourier sine transform of $f (x)$.\par
+$$
+\mathbb{F}_{S}^{-1}\left\{ F_{S}(\omega) \right\} =f(x) =  \sqrt{\frac{2}{\pi}} \int_{0}^{\infty} F_{S}(\omega) \sin(\omega x) d \omega
+$$\par
+ Both the Fourier sine transform and inverse Fourier sine transform involve the multiplication by $\sin(\omega x)$.So, in both cases, the sine function $\sin(\omega x)$ serves as a weighting function, which weights the contribution of each frequency component to the overall transformation. Without this weighting function, the Fourier sine transform and inverse Fourier sine transform would not be well-defined.\par
+ Analogously, if the function $f$ is an even function, we would get:
+ $$
+ \hat{f}(\omega) = \frac{ 2i}{\sqrt{2 \pi}}\int_{0}^{\infty} f(x) \cos(\omega x) dx 
+ $$
+ Assume $f: \to [0^{+}, \infty) \mathbb{R} $ is absolutely integrable, we define:
+ $$
+\mathbb{F}_{C}\left\{ f(x) \right\} = F_{C}(\omega) = \sqrt{\frac{2}{\pi}} \int_{0}^{\infty} f(x) \cos (\omega x) dx
+$$is called the Fourier cosine transform of $f (x)$.\par
+$$
+\mathbb{F}_{C}^{-1}\left\{ F_{C}(\omega) \right\} =f(x) =  \sqrt{\frac{2}{\pi}} \int_{0}^{\infty} F_{C}(\omega) \cos(\omega x) d \omega
+$$\par
+Here are the properties:
+\textbf{i} 
+$$
+\mathbb{F}_{S} \left\{ f'(x) \right\} = -\omega \mathbb{F}_{C} \left\{ f(x) \right\}
+$$\par
+\textbf{ii}
+$$
+\mathbb{F}_{C} \left\{ f'(x) \right\} = -\sqrt{\frac{2}{\pi}} f(0^{+}) + \omega \mathbb{F}_{S} \left\{ f(x) \right\}
+$$ 
 
 
 
