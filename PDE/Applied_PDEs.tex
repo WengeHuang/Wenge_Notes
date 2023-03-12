@@ -1143,15 +1143,37 @@ $$is called the Fourier cosine transform of $f (x)$.\par
 $$
 \mathbb{F}_{C}^{-1}\left\{ F_{C}(\omega) \right\} =f(x) =  \sqrt{\frac{2}{\pi}} \int_{0}^{\infty} F_{C}(\omega) \cos(\omega x) d \omega
 $$\par
-Here are the properties:
+Here are the properties:\\
 \textbf{i} 
 $$
 \mathbb{F}_{S} \left\{ f'(x) \right\} = -\omega \mathbb{F}_{C} \left\{ f(x) \right\}
-$$\par
+$$\\
 \textbf{ii}
 $$
 \mathbb{F}_{C} \left\{ f'(x) \right\} = -\sqrt{\frac{2}{\pi}} f(0^{+}) + \omega \mathbb{F}_{S} \left\{ f(x) \right\}
-$$ 
+$$ \\
+\textbf{iii}
+\begin{align*}
+\mathbb{F}_{S} \left\{ f''(x) \right\} &= -\omega \mathbb{F}_{C} \left\{ f'(x) \right\} \\
+& = \sqrt{\frac{2}{\pi}} \omega f(0^{+}) -\omega^{2} \mathbb{F}_{S} \left\{ f(x) \right\}
+\end{align*} \\
+\textbf{iv}
+\begin{align*}
+\mathbb{F}_{C} \left\{ f''(x) \right\} &= -\sqrt{\frac{2}{\pi}} f(0^{+}) + \omega \mathbb{F}_{S} \left\{ f'(x) \right\}\\
+& =  -\sqrt{\frac{2}{\pi}} f(0^{+}) -\omega^{2} \mathbb{F}_{C} \left\{ f(x) \right\}
+\end{align*} \par
+Example: (Heat equation in a semi-infinite integral) solve the following problem:
+$$
+\left\{
+\begin{array}{lll}
+u_{t}  =  u_{xx} & 0< x < \infty &,  t >0\\
+\\
+u(0, t)  = h(t)  & t>0\\
+\\
+u(x, 0) = \phi(x) & 0< x < \infty
+\end{array}\right.
+$$
+
 
 
 
