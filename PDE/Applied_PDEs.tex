@@ -1173,17 +1173,179 @@ u(0, t)  = h(t)  & t>0\\
 u(x, 0) = \phi(x) & 0< x < \infty
 \end{array}\right.
 $$
+We try to solve this problem with Fourier sine transform: $V(\omega, t) = \mathbb{F}_{S} \left \{ u(x, t) \right \}$. Then the first equation becomes:
+$$
+\mathbb{F}_{S} \left \{ u_{t} \right \} = \mathbb{F}_{S} \left \{ u_{xx} \right \}
+$$Using the property \textbf{iii}, we find 
+$$
+\frac{\partial V}{\partial t} = \sqrt{\frac{2}{\pi}} \omega u(0, t) - \omega^{2} V(\omega, t)
+$$
+For the initial condition, we have:
+$$
+V(\omega, 0) = \mathbb{F}_{S} \left \{  \phi(x) \right \}
+$$
+For the 1st differential equation, we rewrite it in the standard form:
+$$
+\frac{dV}{dt} + P(t)V =Q(t)
+$$with $P(t) = \omega^2$ and $Q(t) = \sqrt{\frac{2}{\pi}} \omega u(0, t)$\par 
+First, we construct a function as:
+$$
+\mu(t) = e^{\int P(t) dt}
+$$with
+$$
+\frac{d \mu}{d t} = P(t) \mu(t)
+$$\par
+Then the left side of the standard for multiply $\mu(t)$, we get:
+$$
+\mu (t) \frac{dV}{dt} + \mu (t)P(t)V = \frac{d}{dt} \left( \mu(t) V(t) \right)
+$$Now, we have the solution as:
+$$
+\frac{d}{dt} \left( \mu(t) V(t) \right) = \mu(t) Q(t)
+$$integrate with $t$ on both side we get:
+$$
+ \mu(t) V(t) = \int \mu(s) Q(s) ds +C
+$$ we need an initial condition to determine C and also the indefinite integral. \par
+We have
+$$
+ \mu(t) = e^{\int P(t) dt} = e^{\omega^2 t}
+$$
+$$
+V(t) = e^{- \omega^2 t} (\int e^{\omega^2 s} \sqrt{\frac{2}{\pi}} \omega u(0, s) ds +C )=  \int e^{-\omega^2 (t-s)} \sqrt{\frac{2}{\pi}} \omega u(0, s) ds +Ce^{- \omega^2 t}
+$$with $V(0) = V(\omega, 0)$ we need to have the indefinite integral from 0 to t so that for the initial condition $t=0$, we only need to consider the constant C. 
+$$
+V(\omega,t) = \int_{0}^{t} e^{-\omega^2 (t-s)} \sqrt{\frac{2}{\pi}} \omega u(0, s) ds +V(\omega, 0)e^{- \omega^2 t}
+$$
+with the inverse Fourier sine transform, we have:
+$$
+u(x, t) = \mathbb{F}_{S}^{-1} \{ V(\omega, t)\} = I + J
+$$considering there are two parts in the $V(\omega, t)$. \par
+For the first part, we have:
+$$
+I = \mathbb{F}_{S}^{-1}  \{V(\omega, 0)e^{- \omega^2 t}  \}= \mathbb{F}_{S}^{-1}  \{ \mathbb{F}_{S}\{ \phi(x)e^{- \omega^2 t}  \} \}
+$$with the inverse Fourier sine transform (remember that both FS and inverse FS we just multipy $\sin(\omega x)$), we have:
+\begin{align*}
+\mathbb{F}_{S}^{-1}  \{ \mathbb{F}_{S}\{ \phi(x)e^{- \omega^2 t}  \} \} & =  \sqrt{\frac{2}{\pi}} \int_{0}^{\infty}  \mathbb{F}_{S}\{ \phi(x)e^{- \omega^2 t} \} \sin (\omega x) d \omega \\
+&= \sqrt{\frac{2}{\pi}} \int_{0}^{\infty}  \left\{ \sqrt{\frac{2}{\pi}} \int_{0}^{\infty} \phi(x)e^{- \omega^2 t} \sin(\omega x) dx   \right\} \sin (\omega x) d \omega \\
+& =  \sqrt{\frac{2}{\pi}} \int_{0}^{\infty}  \left\{ \sqrt{\frac{2}{\pi}} \int_{0}^{\infty} \phi(y) \sin(\omega y) dy   \right\}e^{- \omega^2 \textbf{t}} \sin (\omega \textbf{x}) d \omega \\
+& = \frac{2}{\pi}  \int_{0}^{\infty} \int_{0}^{\infty} \phi(y) \sin(\omega y) \sin (\omega x) e^{- \omega^2 t}  d\omega dy \\
+& = \frac{1}{\pi} \int_{0}^{\infty} \int_{0}^{\infty} \left[ \cos(\omega (x - y)) - \cos(\omega (x + y))  \right] e^{- \omega^2 t}  d\omega  \phi(y) dy \\
+& = \int_{0}^{\infty} \left( \Phi (x-y, t) - \Phi(x+y, t) \right) \phi(y)dy
+\end{align*}
 
+we have the claim that:
+$$
+\int_{0}^{\infty} \cos(\omega x) e^{- \omega^{2} t}  d \omega = \frac{1}{\sqrt{4 \pi t}} e^{-\frac{x^2}{4t}}
+$$
+We start with the Gaussian integral:
+$$\int_{-\infty}^{\infty} e^{-ax^2} dx = \sqrt{\frac{\pi}{a}}$$
+Setting $a = \frac{1}{4t}$, we get:
+$$\int_{-\infty}^{\infty} e^{-\frac{x^2}{4t}} dx = \sqrt{4 \pi t}$$
+Now, we can write the integral we want to prove as:
+$$I = \frac{1}{\pi} \int_{0}^{\infty} \cos(\omega x) e^{- \omega^{2} t} d \omega$$
+Using the Fourier transform of the Gaussian function:
+$$\int_{-\infty}^{\infty} e^{-\alpha x^2} e^{i\beta x} dx = \sqrt{\frac{\pi}{\alpha}} e^{-\beta^2/(4\alpha)}$$
+with $\alpha = \frac{1}{4t}$ and $\beta = \omega x$, we can write:
+$$\int_{-\infty}^{\infty} e^{-\omega^2 t} \cos(\omega x) d\omega = \sqrt{\frac{\pi}{4t}} e^{-x^2/(4t)}$$
+Taking the real part of both sides of the above equation, we get:
+$$\int_{-\infty}^{\infty} e^{-\omega^2 t} \cos(\omega x) d\omega = \frac{1}{2} \sqrt{\frac{\pi}{t}} e^{-x^2/(4t)}$$
+Multiplying both sides by 2 and dividing by $\pi$, we get:
+$$\frac{1}{\pi} \int_{0}^{\infty} \cos(\omega x) e^{- \omega^{2} t} d \omega = \frac{1}{\sqrt{4 \pi t}} e^{-\frac{x^2}{4t}}$$
+which is the desired identity.\par
 
-
-
-
-
-
-
-
-
-
+Then, we consider the second part of the inverse FS:
+\begin{align*}
+J &= \mathbb{F}_{S}^{-1} \left\{ \int_{0}^{t} e^{-\omega^2 (t-s)} \sqrt{\frac{2}{\pi}} \omega h(s)ds \right\} = \sqrt{\frac{2}{\pi}} \int_{0}^{\infty} \left( \int_{0}^{t} e^{-\omega^2 (t-s)} \sqrt{\frac{2}{\pi}} \omega h(s)ds \right) \sin(\omega x )d \omega \\
+& = \frac{2}{\pi} \int_{0}^{t} \left[ \int_{0}^{\infty}e^{-\omega^2 (t-s)}\omega \sin(\omega x )d \omega  \right]h(s) ds = \frac{2}{\pi} \int_{0}^{t} \left[ \int_{0}^{\infty} -\frac{\partial  \cos(\omega x)}{\partial x} e^{-\omega^2 (t-s)}d \omega  \right]h(s) ds\\ 
+& =- \frac{2}{\pi} \int_{0}^{t} \frac{\partial  }{\partial x}  \left[ \int_{0}^{\infty} \cos(\omega x)e^{-\omega^2 (t-s)}d \omega  \right]h(s) ds = - \frac{2}{\pi} \int_{0}^{t} \frac{\partial  }{\partial x}  \left[ \int_{0}^{\infty} \pi \Phi (x, t-s)  \right]h(s) ds \\
+& = -2 \int_{0}^{t}  \frac{\partial  }{\partial x} \Phi (x, t-s) h(s) ds
+\end{align*}\par
+To summarize, we get that:
+$$
+u(x, t) = \int_{0}^{\infty} \left( \Phi (x-y, t) - \Phi(x+y, t) \right) \phi(y)dy-2 \int_{0}^{t}  \frac{\partial  }{\partial x} \Phi (x, t-s) h(s) ds
+$$\par
+Let's introduce a new function:
+$$
+G(x, y, t) = \Phi (x-y, t) - \Phi(x+y, t)
+$$
+and 
+$$
+ -2\frac{\partial  }{\partial x} \Phi (x, t-s) = \frac{\partial}{\partial y} G(x, y, t-s)|_{y = 0}
+$$\par
+Using this identities, we can rewrite $u(x, t)$ as:
+$$
+u(x, t) = \int_{0}^{\infty}G(x, y, t)\phi(y) dy + \int_{0}^{t}\frac{\partial}{\partial y} G(x, y, t-s)|_{y = 0} h(s)ds
+$$\par
+Example, solve the Laplace equation:
+$$
+u_{xx} + u_{yy} = 0
+$$ with $-\infty < x < \infty$ and $y > 0$, subject to 
+$$
+u(x, 0) = f(x)
+$$\\
+For this example, we have two options:\\
+\textbf{option 1}: Fourier transform to $x$.\\
+\textbf{option 2}: Fourier sine transform to $y$.\\
+Let's look at option 1 (another one for the HW)
+$$
+U(\omega, y) = \frac{1}{\sqrt{2 \pi}} \int_{-\infty}^{\infty} u(x, y) e^{i \omega x} dx
+$$
+Then the Laplace equation can be rewritten as:
+$$
+(i\omega)^{2} U(\omega, y) + \frac{\partial ^2}{\partial y^2} U(\omega, y) =0
+$$
+For each fixed $\omega$, we have a 2nd order ODE w.r.t $y$. The characteristic equation is:
+$$
+\lambda^2 + (i\omega)^{2} = 0
+$$ with the solution as $ \lambda = \pm \omega$\par
+For $\omega \neq 0$, we have:
+$$
+U(\omega, y) = A(\omega) e^{-\omega y} + B(\omega) e^{\omega y}
+$$
+Since $y > 0$ which means $y$ can approach $\infty$ we need to have $U(\omega, y)$ to be bounded.
+This implies:
+$$
+\lim_{y \to \infty} |U(\omega, y)| = \lim_{y \to \infty}  \frac{1}{\sqrt{2 \pi}} \int_{-\infty}^{\infty} u(x, y) e^{i \omega x} dx = 0
+$$
+To ensure the equation above, we need:
+$$
+\left\{
+\begin{array}{lll}
+B(\omega) = 0 & if & \omega >0 \\
+A(\omega) = 0 & if & \omega < 0
+\end{array}\right.
+$$
+we can have:
+$$
+C(\omega)
+=
+\left\{
+\begin{array}{lll}
+A(\omega) = 0 & if & \omega >0 \\
+B(\omega) = 0 & if & \omega < 0
+\end{array}\right.
+$$
+$$
+U(\omega, y) = C(\omega) e^{- |{\omega}| y} 
+$$\par
+We have the initial condition $U(\omega, 0) = \mathbb{F}\left\{f(x) \right\} = \hat{f}(\omega)$
+$$
+U(\omega, 0) = C(\omega) =  \hat{f}(\omega)
+$$
+we find that:
+$$
+U(\omega, y) = \hat{f}(\omega) e^{- |{\omega}| y} 
+$$with the inverse Fourier transform, we have:
+$$
+u(x, y) = \mathbb{F}^{-1} \left\{ \hat{f}(\omega) e^{- |{\omega}| y}  \right\} = \mathbb{F}^{-1} \left\{ \hat{f}(\omega) \hat{g}(\omega, y)  \right\}$$
+the inverse of $e^{- |{\omega}| y}$ is
+$$
+ \mathbb{F}^{-1}\{ e^{- |{\omega}| y} \} = g(x, y) = \frac{2y}{x^2+y^2}
+$$
+the 
+do the convolution:
+$$
+u(x, y) = \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{\infty} f(s) \frac{2y}{(x-s)^{2}+y^2}ds
+$$
 
 
 
